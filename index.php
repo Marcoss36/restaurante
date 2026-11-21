@@ -162,6 +162,77 @@ $resultado_pedidos = $conexion->query("SELECT * FROM pedidos ORDER BY id DESC");
     <style>
         .vista-seccion { display: none; }
         .vista-seccion.active { display: block; }
+        
+        /* Encabezado en dos niveles con scroll horizontal estilizado abajo */
+        header {
+            background-color: #991b1b;
+            border-bottom: 4px solid #7f1d1d;
+            padding: 24px 32px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            box-shadow: 0 4px 20px rgba(153, 27, 27, 0.3);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        .header-top {
+            display: flex;
+            align-items: center;
+        }
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+        .logo-img {
+            width: 55px;
+            height: 55px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #ffffff;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.2);
+        }
+        .logo-text {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: #ffffff;
+            letter-spacing: -0.5px;
+        }
+        .nav-tabs-row {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            width: 100%;
+            padding-bottom: 6px;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(255, 255, 255, 0.4) transparent;
+        }
+        .nav-tabs-row::-webkit-scrollbar {
+            height: 6px;
+        }
+        .nav-tabs-row::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.4);
+            border-radius: 4px;
+        }
+        .tab-btn {
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: #ffffff;
+            padding: 10px 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 0.9rem;
+            white-space: nowrap;
+            transition: all 0.2s ease;
+        }
+        .tab-btn.active, .tab-btn:hover {
+            background-color: #ffffff;
+            color: #991b1b;
+            border-color: #ffffff;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
     </style>
 </head>
 <body class="h-full flex flex-col text-slate-800 bg-slate-50">
@@ -172,34 +243,37 @@ $resultado_pedidos = $conexion->query("SELECT * FROM pedidos ORDER BY id DESC");
     </div>
     <?php endif; ?>
 
-    <!-- Encabezado de Navegación -->
-    <header class="bg-wine border-b-4 border-red-900 shadow-lg sticky top-0 z-40 p-4">
-        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
-            <div class="flex items-center space-x-3">
-                <img src="logo.png" alt="Logo" class="w-12 h-12 rounded-full border-2 border-white object-cover shadow" onerror="this.src='https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=100'">
+    <!-- ENCABEZADO EXPANDIDO EN DOS NIVELES -->
+    <header>
+        <!-- Fila Superior: Logo y Nombre -->
+        <div class="header-top">
+            <div class="logo-container">
+                <img src="logo.png" alt="Logo Sabor Ofertin" class="logo-img" onerror="this.src='https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=100'">
                 <div>
-                    <span class="text-xl font-extrabold text-white tracking-tight block">Sabor Ofertin</span>
-                    <span class="text-[10px] font-semibold text-red-200 tracking-widest block uppercase">Conectado a Clever Cloud</span>
+                    <span class="logo-text">Sabor Ofertin</span>
+                    <span class="text-[10px] font-semibold text-red-200 tracking-widest block uppercase">Sistema de Restaurante & POS Conectado a Cloud</span>
                 </div>
             </div>
-            <nav class="flex flex-wrap gap-2 text-xs font-semibold">
-                <button onclick="cambiarVista('menu')" class="tab-btn bg-white/15 hover:bg-white text-white hover:text-wine px-3 py-2 rounded-lg transition active">🍽️ Menú</button>
-                <button onclick="cambiarVista('cocina')" class="tab-btn bg-white/15 hover:bg-white text-white hover:text-wine px-3 py-2 rounded-lg transition">👨‍🍳 Cocina</button>
-                <button onclick="cambiarVista('promos')" class="tab-btn bg-white/15 hover:bg-white text-white hover:text-wine px-3 py-2 rounded-lg transition">🎉 Promos</button>
-                <button onclick="cambiarVista('reservas')" class="tab-btn bg-white/15 hover:bg-white text-white hover:text-wine px-3 py-2 rounded-lg transition">📅 Reservas</button>
-                <button onclick="cambiarVista('especiales')" class="tab-btn bg-white/15 hover:bg-white text-white hover:text-wine px-3 py-2 rounded-lg transition">⭐ Especiales</button>
-                <button onclick="cambiarVista('chefs')" class="tab-btn bg-white/15 hover:bg-white text-white hover:text-wine px-3 py-2 rounded-lg transition">👨‍🍳 Chefs</button>
-                <button onclick="cambiarVista('opiniones')" class="tab-btn bg-white/15 hover:bg-white text-white hover:text-wine px-3 py-2 rounded-lg transition">🏆 Opiniones</button>
-                <button onclick="cambiarVista('sucursales')" class="tab-btn bg-white/15 hover:bg-white text-white hover:text-wine px-3 py-2 rounded-lg transition">📍 Sucursales</button>
-                <button onclick="cambiarVista('contacto')" class="tab-btn bg-white/15 hover:bg-white text-white hover:text-wine px-3 py-2 rounded-lg transition">📞 Contacto</button>
-                <button onclick="cambiarVista('cuestionario')" class="tab-btn bg-white/15 hover:bg-white text-white hover:text-wine px-3 py-2 rounded-lg transition">📊 Cuestionario</button>
-                <button onclick="cambiarVista('sustentabilidad')" class="tab-btn bg-white/15 hover:bg-white text-white hover:text-wine px-3 py-2 rounded-lg transition">🌱 Sustentabilidad</button>
-                <button onclick="cambiarVista('multimedia')" class="tab-btn bg-white/15 hover:bg-white text-white hover:text-wine px-3 py-2 rounded-lg transition">🎬 Multimedia</button>
-            </nav>
+        </div>
+        
+        <!-- Fila Inferior: Todos los apartados abajo del logo en una sola línea con desplazamiento -->
+        <div class="nav-tabs-row">
+            <button class="tab-btn active" onclick="cambiarVista('menu', event)">🍽️ Menú</button>
+            <button class="tab-btn" onclick="cambiarVista('cocina', event)">👨‍🍳 Cocina</button>
+            <button class="tab-btn" onclick="cambiarVista('promos', event)">🎉 Promos</button>
+            <button class="tab-btn" onclick="cambiarVista('reservas', event)">📅 Reservas</button>
+            <button class="tab-btn" onclick="cambiarVista('especiales', event)">⭐ Especiales</button>
+            <button class="tab-btn" onclick="cambiarVista('chefs', event)">👨‍🍳 Chefs</button>
+            <button class="tab-btn" onclick="cambiarVista('opiniones', event)">🏆 Opiniones</button>
+            <button class="tab-btn" onclick="cambiarVista('sucursales', event)">📍 Sucursales</button>
+            <button class="tab-btn" onclick="cambiarVista('contacto', event)">📞 Contacto</button>
+            <button class="tab-btn" onclick="cambiarVista('cuestionario', event)">📊 Cuestionario</button>
+            <button class="tab-btn" onclick="cambiarVista('sustentabilidad', event)">🌱 Sustentabilidad</button>
+            <button class="tab-btn" onclick="cambiarVista('multimedia', event)">🎬 Multimedia</button>
         </div>
     </header>
 
-    <!-- Contenido Principal -->
+    <!-- CONTENIDO PRINCIPAL -->
     <main class="flex-grow max-w-7xl mx-auto px-4 py-8 w-full">
         
         <!-- 1. MENÚ -->
@@ -271,7 +345,7 @@ $resultado_pedidos = $conexion->query("SELECT * FROM pedidos ORDER BY id DESC");
             </div>
         </section>
 
-        <!-- 4. RESERVAS (NUEVO) -->
+        <!-- 4. RESERVAS -->
         <section id="vista-reservas" class="vista-seccion bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
             <h2 class="text-xl font-extrabold text-slate-900 mb-6">📅 Gestión y Reserva de Mesas (Base de Datos)</h2>
             <form method="POST" class="bg-slate-50 p-6 rounded-xl border mb-8 grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -310,7 +384,7 @@ $resultado_pedidos = $conexion->query("SELECT * FROM pedidos ORDER BY id DESC");
             </div>
         </section>
 
-        <!-- 5. ESPECIALES (NUEVO) -->
+        <!-- 5. ESPECIALES -->
         <section id="vista-especiales" class="vista-seccion bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
             <h2 class="text-xl font-extrabold text-slate-900 mb-6">⭐ Platillos Especiales del Chef (Base de Datos)</h2>
             <form method="POST" class="bg-slate-50 p-6 rounded-xl border mb-8 grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -373,7 +447,7 @@ $resultado_pedidos = $conexion->query("SELECT * FROM pedidos ORDER BY id DESC");
             </div>
         </section>
 
-        <!-- 8. SUCURSALES (NUEVO) -->
+        <!-- 8. SUCURSALES -->
         <section id="vista-sucursales" class="vista-seccion bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
             <h2 class="text-xl font-extrabold text-slate-900 mb-6">📍 Sucursales (Base de Datos)</h2>
             <form method="POST" class="bg-slate-50 p-6 rounded-xl border mb-8 grid grid-cols-1 gap-4">
@@ -392,7 +466,7 @@ $resultado_pedidos = $conexion->query("SELECT * FROM pedidos ORDER BY id DESC");
             </div>
         </section>
 
-        <!-- 9. CONTACTO (NUEVO) -->
+        <!-- 9. CONTACTO -->
         <section id="vista-contacto" class="vista-seccion bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
             <h2 class="text-xl font-extrabold text-slate-900 mb-6">📞 Contacto (Base de Datos)</h2>
             <form method="POST" class="bg-slate-50 p-6 rounded-xl border mb-8 grid grid-cols-1 gap-4">
@@ -411,7 +485,7 @@ $resultado_pedidos = $conexion->query("SELECT * FROM pedidos ORDER BY id DESC");
             </div>
         </section>
 
-        <!-- 10. CUESTIONARIO (NUEVO) -->
+        <!-- 10. CUESTIONARIO -->
         <section id="vista-cuestionario" class="vista-seccion bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
             <h2 class="text-xl font-extrabold text-slate-900 mb-6">📊 Cuestionario de Satisfacción (Guardado en DB)</h2>
             <form method="POST" class="bg-slate-50 p-6 rounded-xl border flex flex-col gap-4">
@@ -460,7 +534,7 @@ $resultado_pedidos = $conexion->query("SELECT * FROM pedidos ORDER BY id DESC");
     </footer>
 
     <script>
-        function cambiarVista(idVista) {
+        function cambiarVista(idVista, event) {
             document.querySelectorAll('.vista-seccion').forEach(sec => sec.classList.remove('active'));
             document.getElementById('vista-' + idVista).classList.add('active');
             
