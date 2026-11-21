@@ -4,7 +4,7 @@ include 'conexion.php';
 $mensaje_exito = "";
 
 // -------------------------------------------------------------
-// 1. ACCIONES DE CREAR (INSERT)
+// 1. ACCIONES DE CREAR (INSERT) Y ACTUALIZAR (UPDATE)
 // -------------------------------------------------------------
 if (isset($_POST['guardar_chef'])) {
     $nombre = $_POST['nombre']; $bio = $_POST['bio'];
@@ -60,6 +60,18 @@ if (isset($_POST['realizar_pedido'])) {
     $stmt = $conexion->prepare("INSERT INTO pedidos (folio, mesa, metodo_pago, total, estado) VALUES (?, ?, ?, ?, 'En Proceso')");
     $stmt->bind_param("sssd", $folio, $mesa, $metodo_pago, $total); $stmt->execute(); $stmt->close();
     $mensaje_exito = "¡Pedido registrado con éxito! Folio: " . $folio;
+}
+
+// Cambiar estado del pedido desde cocina
+if (isset($_GET['cambiar_estado']) && isset($_GET['id'])) {
+    $id_pedido = $_GET['id'];
+    $nuevo_estado = $_GET['cambiar_estado'];
+    $stmt = $conexion->prepare("UPDATE pedidos SET estado = ? WHERE id = ?");
+    $stmt->bind_param("si", $nuevo_estado, $id_pedido);
+    $stmt->execute();
+    $stmt->close();
+    header("Location: index.php");
+    exit();
 }
 
 // -------------------------------------------------------------
@@ -179,7 +191,6 @@ $resultado_pedidos = $conexion->query("SELECT * FROM pedidos ORDER BY id DESC");
         <!-- 1. MENÚ & POS -->
         <section id="vista-menu" class="vista-seccion active bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                <!-- Catálogo de platillos -->
                 <div class="lg:col-span-2">
                     <h2 class="text-xl font-extrabold text-slate-900 mb-6">Catálogo de Platillos (Base de Datos)</h2>
                     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 max-h-[600px] overflow-y-auto p-2">
@@ -200,7 +211,6 @@ $resultado_pedidos = $conexion->query("SELECT * FROM pedidos ORDER BY id DESC");
                     </div>
                 </div>
 
-                <!-- Panel Lateral POS -->
                 <div class="bg-slate-50 border border-slate-200 rounded-2xl p-6 shadow-sm flex flex-col justify-between">
                     <form method="POST" id="formPedido">
                         <h3 class="text-lg font-bold text-slate-900 mb-4 border-b pb-2">Tu Pedido Actual</h3>
@@ -246,21 +256,42 @@ $resultado_pedidos = $conexion->query("SELECT * FROM pedidos ORDER BY id DESC");
             </div>
         </section>
 
-        <!-- 2. COCINA -->
+        <!-- 2. COCINA (MONITOR INTERACTIVO CON CAMBIO DE ESTADO) -->
         <section id="vista-cocina" class="vista-seccion bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
-            <h2 class="text-xl font-extrabold text-slate-900 mb-6">👨‍🍳 Monitor de Cocina (Pedidos en Base de Datos)</h2>
+            <h2 class="text-xl font-extrabold text-slate-900 mb-6">👨‍🍳 Monitor de Cocina (Control de Estados en Base de Datos)</h2>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <?php while($row = $resultado_pedidos->fetch_assoc()): ?>
-                <div class="border-l-4 border-wine bg-slate-50 p-5 rounded-xl shadow-sm">
-                    <div class="flex justify-between items-center mb-2">
-                        <strong class="text-sm">Folio: <?= $row['folio'] ?></strong>
-                        <span class="bg-orange-100 text-orange-800 text-[10px] font-bold px-2 py-0.5 rounded uppercase"><?= $row['estado'] ?></span>
+                <?php if ($resultado_pedidos && $resultado_pedidos->num_rows > 0): ?>
+                    <?php while($row = $resultado_pedidos->fetch_assoc()): ?>
+                    <div class="border-l-4 <?= $row['estado'] == 'Completado' ? 'border-emerald-600 bg-emerald-50/30' : 'border-orange-500 bg-slate-50' ?> p-5 rounded-xl shadow-sm flex flex-col justify-between">
+                        <div>
+                            <div class="flex justify-between items-center mb-2">
+                                <strong class="text-sm">Folio: <?= $row['folio'] ?></strong>
+                                <span class="<?= $row['estado'] == 'Completado' ? 'bg-emerald-100 text-emerald-800' : 'bg-orange-100 text-orange-800' ?> text-[10px] font-bold px-2.5 py-0.5 rounded uppercase">
+                                    <?= $row['estado'] ?>
+                                </span>
+                            </div>
+                            <p class="text-xs text-slate-600">Mesa: <strong><?= $row['mesa'] ?></strong></p>
+                            <p class="text-xs text-slate-600">Pago: <strong><?= $row['metodo_pago'] ?></strong></p>
+                            <span class="text-wine font-extrabold text-sm block mt-3">Total: $<?= number_format($row['total'], 2) ?></span>
+                        </div>
+                        
+                        <!-- Botones para cambiar estado directamente en la base de datos -->
+                        <div class="mt-4 pt-3 border-t flex gap-2">
+                            <?php if ($row['estado'] != 'Completado'): ?>
+                                <a href="index.php?cambiar_estado=Completado&id=<?= $row['id'] ?>" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white text-center py-1.5 rounded-lg text-[11px] font-bold transition">
+                                    ✅ Marcar Completado
+                                </a>
+                            <?php else: ?>
+                                <a href="index.php?cambiar_estado=En Proceso&id=<?= $row['id'] ?>" class="flex-1 bg-orange-500 hover:bg-orange-600 text-white text-center py-1.5 rounded-lg text-[11px] font-bold transition">
+                                    🔄 Regresar a Proceso
+                                </a>
+                            <?php endif; ?>
+                        </div>
                     </div>
-                    <p class="text-xs text-slate-600">Mesa: <strong><?= $row['mesa'] ?></strong></p>
-                    <p class="text-xs text-slate-600">Pago: <strong><?= $row['metodo_pago'] ?></strong></p>
-                    <span class="text-wine font-extrabold text-sm block mt-3">Total: $<?= number_format($row['total'], 2) ?></span>
-                </div>
-                <?php endwhile; ?>
+                    <?php endwhile; ?>
+                <?php else: ?>
+                    <p class="text-slate-500 italic col-span-full">No hay pedidos registrados en la cocina.</p>
+                <?php endif; ?>
             </div>
         </section>
 
@@ -406,7 +437,7 @@ $resultado_pedidos = $conexion->query("SELECT * FROM pedidos ORDER BY id DESC");
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <?php while($row = $resultado_contacto->fetch_assoc()): ?>
                 <div class="border rounded-xl p-6 relative bg-white">
-                    <a href="index.php?eliminar_contacto=<?= $row['id'] ?>" onclick="return confirm('¿Eliminar?')" class="absolute top-4 right-4 bg-red-100 text-red-700 px-2 py-1 rounded-lg text-xs font-bold">🗑️</a>
+                    <a href="index.php?eliminar_contacto=<?= $row['id'] ?>" onclick="return confirm('¿Eliminar?')" class="absolute top-4 right-4 bg-red-100 text-red-700 px-2.5 py-1 rounded-lg text-xs font-bold">🗑️</a>
                     <h3 class="font-bold text-base text-slate-900 mb-2"><?= $row['canal'] ?></h3>
                     <p class="text-slate-600 text-xs"><?= $row['info'] ?></p>
                 </div>
@@ -440,7 +471,7 @@ $resultado_pedidos = $conexion->query("SELECT * FROM pedidos ORDER BY id DESC");
             </p>
         </section>
 
-        <!-- 12. SECCIÓN Y MULTIMEDIA CON MENÚ DESPLEGABLE (MISIÓN Y VISIÓN EXTENSAS) -->
+        <!-- 12. SECCIÓN Y MULTIMEDIA -->
         <section id="vista-seccion" class="vista-seccion bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
             <h2 class="text-xl font-extrabold text-slate-900 mb-4">📖 Sección y Multimedia</h2>
             <p class="text-xs text-slate-500 mb-6">Selecciona una opción del menú desplegable para consultar nuestra filosofía institucional o contenido multimedia.</p>
@@ -454,13 +485,11 @@ $resultado_pedidos = $conexion->query("SELECT * FROM pedidos ORDER BY id DESC");
                 </select>
             </div>
 
-            <!-- Contenedor de Texto Extenso (Misión / Visión) -->
             <div id="resultadoTextoSeccion" class="hidden p-6 bg-slate-50 border rounded-xl">
                 <h3 id="tituloSeccionDinamica" class="text-base font-bold text-wine mb-3"></h3>
                 <p id="textoSeccionDinamica" class="text-xs text-slate-700 leading-relaxed whitespace-pre-line"></p>
             </div>
 
-            <!-- Contenedor Multimedia -->
             <div id="resultadoMultimedia" class="hidden grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
                 <div class="border p-4 rounded-xl">
                     <h3 class="font-bold text-sm mb-2">Video Institucional</h3>
@@ -481,7 +510,6 @@ $resultado_pedidos = $conexion->query("SELECT * FROM pedidos ORDER BY id DESC");
     </footer>
 
     <script>
-        // Carrito POS y Envío
         let carrito = {};
 
         function agregarAlCarrito(nombre, precio) {
