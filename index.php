@@ -147,15 +147,6 @@ $resultado_pedidos = $conexion->query("SELECT * FROM pedidos ORDER BY id DESC");
             padding: 10px 18px; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 0.9rem; white-space: nowrap; transition: all 0.2s ease;
         }
         .tab-btn.active, .tab-btn:hover { background-color: #ffffff; color: #991b1b; border-color: #ffffff; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); }
-        
-        /* Animación suave para la mascota grande */
-        @keyframes flotar {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-8px); }
-        }
-        .mascota-grande {
-            animation: flotar 3.5s ease-in-out infinite;
-        }
     </style>
 </head>
 <body class="h-full flex flex-col text-slate-800 bg-slate-50">
@@ -197,10 +188,9 @@ $resultado_pedidos = $conexion->query("SELECT * FROM pedidos ORDER BY id DESC");
     <!-- CONTENIDO PRINCIPAL -->
     <main class="flex-grow max-w-7xl mx-auto px-4 py-8 w-full relative">
         
-        <!-- MASCOTA MÁS GRANDE (SOLO VISIBLE EN SECCIÓN MENÚ Y PANTALLAS AMPLIAS) -->
-        <div id="mascotaMenuUnica" class="mascota-grande hidden xl:flex flex-col items-center" style="position: fixed; bottom: 40px; left: 16px; z-index: 50;">
-            <img src="mascota.png" alt="Mascota Sabor Ofertin" onerror="this.src='logo.png'" style="width: 140px; height: 140px; border-radius: 50%; object-fit: cover; border: 4px solid #991b1b; box-shadow: 0 10px 25px rgba(0,0,0,0.3); background: #fce7f3;">
-            <span style="font-size: 12px; font-weight: 800; background: #991b1b; color: white; padding: 4px 12px; border-radius: 9999px; margin-top: -12px; box-shadow: 0 3px 8px rgba(0,0,0,0.25);">¡Hola! 🐾</span>
+        <!-- MASCOTA GRANDE, ESTÁTICA Y SIN CÍRCULO (SOLO EN MENÚ) -->
+        <div id="mascotaMenuUnica" class="hidden xl:block" style="position: fixed; bottom: 20px; left: 16px; z-index: 50;">
+            <img src="mascota.png" alt="Mascota Sabor Ofertin" onerror="this.src='logo.png'" style="width: 260px; height: auto; object-fit: contain; filter: drop-shadow(0 10px 15px rgba(0,0,0,0.25));">
         </div>
 
         <!-- 1. MENÚ & POS -->
@@ -564,11 +554,11 @@ $resultado_pedidos = $conexion->query("SELECT * FROM pedidos ORDER BY id DESC");
             document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('bg-white', 'text-wine'));
             event.currentTarget.classList.add('bg-white', 'text-wine');
 
-            // Mostrar la mascota grande SOLAMENTE en la sección del menú
+            // Mostrar la mascota grande y fija SOLAMENTE en la sección del menú
             const mascota = document.getElementById('mascotaMenuUnica');
             if (mascota) {
                 if (idVista === 'menu') {
-                    mascota.style.display = 'flex';
+                    mascota.style.display = 'block';
                 } else {
                     mascota.style.display = 'none';
                 }
