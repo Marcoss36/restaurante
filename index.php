@@ -62,15 +62,6 @@ if (isset($_POST['realizar_pedido'])) {
     $mensaje_exito = "¡Pedido registrado con éxito! Folio: " . $folio;
 }
 
-// Guardar reseña en vivo
-if (isset($_POST['enviar_reseña'])) {
-    $cliente = $_POST['nombre_cliente']; $estrellas = $_POST['estrellas']; $comentario = $_POST['comentario_resena'];
-    $stmt = $conexion->prepare("INSERT INTO opiniones (cliente, comentario) VALUES (?, ?)");
-    $texto_opinion = "⭐ " . $estrellas . "/5 - " . $comentario;
-    $stmt->bind_param("ss", $cliente, $texto_opinion); $stmt->execute(); $stmt->close();
-    $mensaje_exito = "¡Gracias por tu reseña!";
-}
-
 // Cambiar estado del pedido desde cocina
 if (isset($_GET['cambiar_estado']) && isset($_GET['id'])) {
     $id_pedido = $_GET['id'];
@@ -95,7 +86,7 @@ if (isset($_GET['eliminar_contacto'])) { $id = $_GET['eliminar_contacto']; $cone
 if (isset($_GET['eliminar_reserva'])) { $id = $_GET['eliminar_reserva']; $conexion->query("DELETE FROM reservas WHERE id = $id"); header("Location: index.php"); exit(); }
 
 // -------------------------------------------------------------
-// 3. CONSULTAS Y MÉTRICAS EN TIEMPO REAL (SELECT)
+// 3. CONSULTAS EN TIEMPO REAL (SELECT)
 // -------------------------------------------------------------
 $resultado_menu = $conexion->query("SELECT * FROM menu");
 $resultado_chefs = $conexion->query("SELECT * FROM chefs");
@@ -106,13 +97,6 @@ $resultado_sucursales = $conexion->query("SELECT * FROM sucursales");
 $resultado_contacto = $conexion->query("SELECT * FROM contacto");
 $resultado_reservas = $conexion->query("SELECT * FROM reservas ORDER BY id DESC");
 $resultado_pedidos = $conexion->query("SELECT * FROM pedidos ORDER BY id DESC");
-
-// Cálculo de Métricas para el Dashboard
-$res_metricas_ventas = $conexion->query("SELECT SUM(total) as total_ventas, COUNT(*) as total_pedidos FROM pedidos");
-$row_metricas = $res_metricas_ventas ? $res_metricas_ventas->fetch_assoc() : ['total_ventas' => 0, 'total_pedidos' => 0];
-$ventas_totales = $row_metricas['total_ventas'] ? $row_metricas['total_ventas'] : 0;
-$pedidos_totales = $row_metricas['total_pedidos'] ? $row_metricas['total_pedidos'] : 0;
-$ticket_promedio = $pedidos_totales > 0 ? $ventas_totales / $pedidos_totales : 0;
 ?>
 <!DOCTYPE html>
 <html lang="es" class="h-full bg-slate-50">
@@ -142,25 +126,25 @@ $ticket_promedio = $pedidos_totales > 0 ? $ventas_totales / $pedidos_totales : 0
         header {
             background-color: #991b1b;
             border-bottom: 4px solid #7f1d1d;
-            padding: 20px 32px;
+            padding: 24px 32px;
             display: flex;
             flex-direction: column;
-            gap: 15px;
+            gap: 20px;
             box-shadow: 0 4px 20px rgba(153, 27, 27, 0.3);
             position: sticky;
             top: 0;
             z-index: 1000;
         }
-        .header-top { display: flex; justify-content: space-between; align-items: center; }
+        .header-top { display: flex; align-items: center; }
         .logo-container { display: flex; align-items: center; gap: 14px; }
-        .logo-img { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; border: 2px solid #ffffff; box-shadow: 0 3px 8px rgba(0,0,0,0.2); }
-        .logo-text { font-size: 1.6rem; font-weight: 800; color: #ffffff; letter-spacing: -0.5px; }
-        .nav-tabs-row { display: flex; gap: 8px; overflow-x: auto; width: 100%; padding-bottom: 4px; scrollbar-width: thin; scrollbar-color: rgba(255, 255, 255, 0.4) transparent; }
+        .logo-img { width: 55px; height: 55px; border-radius: 50%; object-fit: cover; border: 2px solid #ffffff; box-shadow: 0 3px 8px rgba(0,0,0,0.2); }
+        .logo-text { font-size: 1.8rem; font-weight: 800; color: #ffffff; letter-spacing: -0.5px; }
+        .nav-tabs-row { display: flex; gap: 10px; overflow-x: auto; width: 100%; padding-bottom: 6px; scrollbar-width: thin; scrollbar-color: rgba(255, 255, 255, 0.4) transparent; }
         .nav-tabs-row::-webkit-scrollbar { height: 6px; }
         .nav-tabs-row::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.4); border-radius: 4px; }
         .tab-btn {
             background: rgba(255, 255, 255, 0.15); border: 1px solid rgba(255, 255, 255, 0.3); color: #ffffff;
-            padding: 8px 14px; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 0.85rem; white-space: nowrap; transition: all 0.2s ease;
+            padding: 10px 18px; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 0.9rem; white-space: nowrap; transition: all 0.2s ease;
         }
         .tab-btn.active, .tab-btn:hover { background-color: #ffffff; color: #991b1b; border-color: #ffffff; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); }
     </style>
@@ -173,41 +157,31 @@ $ticket_promedio = $pedidos_totales > 0 ? $ventas_totales / $pedidos_totales : 0
     </div>
     <?php endif; ?>
 
-    <!-- ENCABEZADO EXPANDIDO CON SELECTOR DE ROL -->
+    <!-- ENCABEZADO EXPANDIDO EN DOS NIVELES -->
     <header>
         <div class="header-top">
             <div class="logo-container">
                 <img src="logo.png" alt="Logo Sabor Ofertin" class="logo-img" onerror="this.src='https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=100'">
                 <div>
                     <span class="logo-text">Sabor Ofertin</span>
-                    <span class="text-[10px] font-semibold text-red-200 tracking-widest block uppercase">Sistema Cloud & POS</span>
+                    <span class="text-[10px] font-semibold text-red-200 tracking-widest block uppercase">Sistema de Restaurante & POS Conectado a Cloud</span>
                 </div>
-            </div>
-            
-            <!-- Selector de Rol (Simulación de Permisos) -->
-            <div class="flex items-center gap-2 bg-red-950/60 px-3 py-1.5 rounded-xl border border-red-800 text-white text-xs font-semibold">
-                <span>👤 Rol Activo:</span>
-                <select id="selectorRol" onchange="cambiarRol(this.value)" class="bg-white text-slate-900 px-2 py-1 rounded font-bold outline-none">
-                    <option value="admin">Administrador (Total)</option>
-                    <option value="mesero">Mesero / Caja (POS & Cocina)</option>
-                </select>
             </div>
         </div>
         
         <div class="nav-tabs-row">
             <button class="tab-btn active" onclick="cambiarVista('menu', event)">🍽️ Menú & POS</button>
             <button class="tab-btn" onclick="cambiarVista('cocina', event)">👨‍🍳 Cocina</button>
-            <button class="tab-btn rol-admin" onclick="cambiarVista('dashboard', event)">📊 Dashboard & Ventas</button>
             <button class="tab-btn" onclick="cambiarVista('promos', event)">🎉 Promos</button>
             <button class="tab-btn" onclick="cambiarVista('reservas', event)">📅 Reservas</button>
             <button class="tab-btn" onclick="cambiarVista('especiales', event)">⭐ Especiales</button>
-            <button class="tab-btn rol-admin" onclick="cambiarVista('chefs', event)">👨‍🍳 Chefs</button>
-            <button class="tab-btn" onclick="cambiarVista('opiniones', event)">🏆 Reseñas</button>
-            <button class="tab-btn rol-admin" onclick="cambiarVista('sucursales', event)">📍 Sucursales</button>
-            <button class="tab-btn rol-admin" onclick="cambiarVista('contacto', event)">📞 Contacto</button>
+            <button class="tab-btn" onclick="cambiarVista('chefs', event)">👨‍🍳 Chefs</button>
+            <button class="tab-btn" onclick="cambiarVista('opiniones', event)">🏆 Opiniones</button>
+            <button class="tab-btn" onclick="cambiarVista('sucursales', event)">📍 Sucursales</button>
+            <button class="tab-btn" onclick="cambiarVista('contacto', event)">📞 Contacto</button>
             <button class="tab-btn" onclick="cambiarVista('cuestionario', event)">📊 Cuestionario</button>
             <button class="tab-btn" onclick="cambiarVista('sustentabilidad', event)">🌱 Sustentabilidad</button>
-            <button class="tab-btn rol-admin" onclick="cambiarVista('seccion', event)">📖 Multimedia</button>
+            <button class="tab-btn" onclick="cambiarVista('seccion', event)">📖 Sección & Multimedia</button>
         </div>
     </header>
 
@@ -217,19 +191,21 @@ $ticket_promedio = $pedidos_totales > 0 ? $ventas_totales / $pedidos_totales : 0
         <!-- 1. MENÚ & POS -->
         <section id="vista-menu" class="vista-seccion active bg-white rounded-2xl shadow-sm border border-slate-200 p-6 relative" style="overflow: visible !important;">
             
+            <!-- MASCOTA EN EL ÁREA AMARILLA (SE MUEVE CON EL SCROLL) -->
             <div class="hidden xl:block" style="position: absolute; bottom: 30px; right: -220px; z-index: 10; pointer-events: none;">
                 <img src="mascota.png" alt="Mascota Sabor Ofertin" onerror="this.src='logo.png'" style="width: 170px; height: auto; object-fit: contain; mix-blend-mode: multiply;">
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <div class="lg:col-span-2">
+                    <!-- CABECERA DEL CATÁLOGO CON EL MENÚ DESPLEGABLE -->
                     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-3">
                         <h2 class="text-xl font-extrabold text-slate-900">Catálogo de Platillos</h2>
                         <select id="filtroCategoria" onchange="filtrarPlatillos()" class="px-3 py-1.5 border rounded-xl text-xs font-bold bg-slate-50 text-slate-700 shadow-sm">
                             <option value="todos">📂 Todas las Categorías</option>
                             <option value="bebida">🥤 Bebidas</option>
-                            <option value="rapida">🍔 Comida Rápida</option>
-                            <option value="platillo">🍲 Platillos / Ensaladas</option>
+                            <option value="rapida">🍔 Comida Rápida (Alitas, Hamburguesas, etc.)</option>
+                            <option value="platillo">🍲 Platillos / Ensaladas / Sopas</option>
                             <option value="postre">🍰 Postres</option>
                         </select>
                     </div>
@@ -242,7 +218,7 @@ $ticket_promedio = $pedidos_totales > 0 ? $ventas_totales / $pedidos_totales : 0
                                     $cat_detectada = 'rapida';
                                 } elseif (strpos($nombre_platillo, 'agua') !== false || strpos($nombre_platillo, 'jugo') !== false || strpos($nombre_platillo, 'refresco') !== false || strpos($nombre_platillo, 'cafe') !== false) {
                                     $cat_detectada = 'bebida';
-                                } elseif (strpos($nombre_platillo, 'pastel') !== false || strpos($nombre_platillo, 'postre') !== false || strpos($nombre_platillo, 'hot cake') !== false) {
+                                } elseif (strpos($nombre_platillo, 'pastel') !== false || strpos($nombre_platillo, 'postre') !== false || strpos($nombre_platillo, 'hot cake') !== false || strpos($nombre_platillo, 'panqueque') !== false) {
                                     $cat_detectada = 'postre';
                                 } else {
                                     $cat_detectada = 'platillo';
@@ -253,7 +229,6 @@ $ticket_promedio = $pedidos_totales > 0 ? $ventas_totales / $pedidos_totales : 0
                                 <div class="p-3">
                                     <h3 class="font-bold text-xs text-slate-800"><?= $row['nombre'] ?></h3>
                                     <span class="text-wine font-extrabold text-sm block mt-1">$<?= number_format($row['precio'], 2) ?></span>
-                                    <span class="text-[10px] text-emerald-600 font-semibold block mt-0.5">📦 Stock Disponible</span>
                                 </div>
                                 <button type="button" onclick="agregarAlCarrito('<?= addslashes($row['nombre']) ?>', <?= $row['precio'] ?>)" class="bg-wine text-white text-[10px] font-bold py-1.5 w-full hover:bg-wine-hover transition">+ Agregar</button>
                             </div>
@@ -262,21 +237,21 @@ $ticket_promedio = $pedidos_totales > 0 ? $ventas_totales / $pedidos_totales : 0
                             <p class="text-slate-500 italic col-span-full">No hay platillos registrados.</p>
                         <?php endif; ?>
                     </div>
-                    <p id="sinResultados" class="text-slate-400 italic text-xs mt-4 hidden">No hay platillos en esta categoría.</p>
+                    <p id="sinResultados" class="text-slate-400 italic text-xs mt-4 hidden">No hay platillos registrados en esta categoría.</p>
                 </div>
 
-                <!-- Panel de Pedido Actual con Botón de Imprimir Ticket -->
                 <div class="bg-slate-50 border border-slate-200 rounded-2xl p-6 shadow-sm flex flex-col justify-between">
                     <form method="POST" id="formPedido">
                         <h3 class="text-lg font-bold text-slate-900 mb-4 border-b pb-2">Tu Pedido Actual</h3>
                         
                         <div class="mb-4">
                             <label class="block text-xs font-bold text-slate-600 mb-1">Mesa Asignada</label>
-                            <select name="mesa" id="selectMesa" class="w-full px-3 py-2 border rounded-xl text-xs bg-white font-semibold">
+                            <select name="mesa" class="w-full px-3 py-2 border rounded-xl text-xs bg-white font-semibold">
                                 <option value="Mesa 1 (Ventana)">Mesa 1 (Ventana)</option>
                                 <option value="Mesa 2 (Centro)">Mesa 2 (Centro)</option>
                                 <option value="Mesa 3 (Centro)">Mesa 3 (Centro)</option>
                                 <option value="Mesa 4 (Terraza)">Mesa 4 (Terraza)</option>
+                                <option value="Mesa 5 (Terraza)">Mesa 5 (Terraza)</option>
                                 <option value="Mesa VIP">Mesa VIP</option>
                                 <option value="Para Llevar">📦 Para Llevar</option>
                             </select>
@@ -290,7 +265,7 @@ $ticket_promedio = $pedidos_totales > 0 ? $ventas_totales / $pedidos_totales : 0
                             <label class="block text-xs font-bold text-slate-600 mb-1">Método de Pago</label>
                             <select name="metodo_pago" class="w-full px-3 py-2 border rounded-xl text-xs bg-white font-semibold">
                                 <option value="Efectivo">💵 Efectivo</option>
-                                <option value="Tarjeta de Crédito/Débito">💳 Tarjeta</option>
+                                <option value="Tarjeta de Crédito/Débito">💳 Tarjeta de Crédito / Débito</option>
                                 <option value="Transferencia Bancaria">📱 Transferencia (SPEI)</option>
                             </select>
                         </div>
@@ -302,14 +277,9 @@ $ticket_promedio = $pedidos_totales > 0 ? $ventas_totales / $pedidos_totales : 0
                             <span id="txtTotal" class="text-wine">$0.00</span>
                         </div>
 
-                        <div class="flex flex-col gap-2">
-                            <button type="submit" name="realizar_pedido" class="w-full bg-wine hover:bg-wine-hover text-white font-bold py-3 rounded-xl text-xs shadow-md transition">
-                                Pagar y enviar a cocina
-                            </button>
-                            <button type="button" onclick="imprimirTicket()" class="w-full bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold py-2 rounded-xl text-xs transition">
-                                🖨️ Imprimir Ticket de Cobro
-                            </button>
-                        </div>
+                        <button type="submit" name="realizar_pedido" class="w-full bg-wine hover:bg-wine-hover text-white font-bold py-3 rounded-xl text-xs shadow-md transition">
+                            Pagar y enviar a cocina
+                        </button>
                     </form>
                 </div>
             </div>
@@ -317,7 +287,7 @@ $ticket_promedio = $pedidos_totales > 0 ? $ventas_totales / $pedidos_totales : 0
 
         <!-- 2. COCINA -->
         <section id="vista-cocina" class="vista-seccion bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
-            <h2 class="text-xl font-extrabold text-slate-900 mb-6">👨‍🍳 Monitor de Cocina</h2>
+            <h2 class="text-xl font-extrabold text-slate-900 mb-6">👨‍🍳 Monitor de Cocina (Control de Estados en Base de Datos)</h2>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <?php if ($resultado_pedidos && $resultado_pedidos->num_rows > 0): ?>
                     <?php while($row = $resultado_pedidos->fetch_assoc()): ?>
@@ -353,31 +323,9 @@ $ticket_promedio = $pedidos_totales > 0 ? $ventas_totales / $pedidos_totales : 0
             </div>
         </section>
 
-        <!-- 3. DASHBOARD Y REPORTES DE VENTAS -->
-        <section id="vista-dashboard" class="vista-seccion bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
-            <h2 class="text-xl font-extrabold text-slate-900 mb-6">📊 Dashboard Financiero y Reportes de Ventas</h2>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                <div class="bg-red-50 border border-red-100 p-6 rounded-2xl shadow-sm">
-                    <span class="text-xs font-bold text-wine uppercase block mb-1">Ventas Totales Registradas</span>
-                    <h3 class="text-2xl font-black text-slate-900">$<?= number_format($ventas_totales, 2) ?></h3>
-                </div>
-                <div class="bg-emerald-50 border border-emerald-100 p-6 rounded-2xl shadow-sm">
-                    <span class="text-xs font-bold text-emerald-800 uppercase block mb-1">Pedidos Totales Atendidos</span>
-                    <h3 class="text-2xl font-black text-slate-900"><?= $pedidos_totales ?></h3>
-                </div>
-                <div class="bg-blue-50 border border-blue-100 p-6 rounded-2xl shadow-sm">
-                    <span class="text-xs font-bold text-blue-800 uppercase block mb-1">Ticket Promedio por Orden</span>
-                    <h3 class="text-2xl font-black text-slate-900">$<?= number_format($ticket_promedio, 2) ?></h3>
-                </div>
-            </div>
-            <div class="p-6 bg-slate-50 rounded-2xl border text-xs text-slate-600">
-                <p>💡 **Nota Administrativa:** Todos los datos se sincronizan directamente con la base de datos MySQL en Cloud en tiempo real.</p>
-            </div>
-        </section>
-
-        <!-- 4. PROMOS -->
+        <!-- 3. PROMOS -->
         <section id="vista-promos" class="vista-seccion bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
-            <h2 class="text-xl font-extrabold text-slate-900 mb-6">🎉 Promociones</h2>
+            <h2 class="text-xl font-extrabold text-slate-900 mb-6">🎉 Promociones (Base de Datos)</h2>
             <form method="POST" class="bg-slate-50 p-6 rounded-xl border mb-8 grid grid-cols-1 md:grid-cols-3 gap-4">
                 <input type="text" name="titulo" placeholder="Título" required class="px-4 py-2 border rounded-xl text-xs">
                 <input type="text" name="tag" placeholder="Etiqueta (Ej. 2x1)" required class="px-4 py-2 border rounded-xl text-xs">
@@ -401,9 +349,9 @@ $ticket_promedio = $pedidos_totales > 0 ? $ventas_totales / $pedidos_totales : 0
             </div>
         </section>
 
-        <!-- 5. RESERVAS -->
+        <!-- 4. RESERVAS -->
         <section id="vista-reservas" class="vista-seccion bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
-            <h2 class="text-xl font-extrabold text-slate-900 mb-6">📅 Gestión y Reserva de Mesas</h2>
+            <h2 class="text-xl font-extrabold text-slate-900 mb-6">📅 Gestión y Reserva de Mesas (Base de Datos)</h2>
             <form method="POST" class="bg-slate-50 p-6 rounded-xl border mb-8 grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div><label class="block text-xs font-bold text-slate-600 uppercase mb-1">Mesa</label><input type="text" name="mesa" placeholder="Ej. Mesa 1" required class="w-full px-4 py-2 border rounded-xl text-xs"></div>
                 <div><label class="block text-xs font-bold text-slate-600 uppercase mb-1">Nombre Completo</label><input type="text" name="nombre" placeholder="Ej. Carlos Mendoza" required class="w-full px-4 py-2 border rounded-xl text-xs"></div>
@@ -424,9 +372,9 @@ $ticket_promedio = $pedidos_totales > 0 ? $ventas_totales / $pedidos_totales : 0
             </div>
         </section>
 
-        <!-- 6. ESPECIALES -->
+        <!-- 5. ESPECIALES -->
         <section id="vista-especiales" class="vista-seccion bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
-            <h2 class="text-xl font-extrabold text-slate-900 mb-6">⭐ Platillos Especiales</h2>
+            <h2 class="text-xl font-extrabold text-slate-900 mb-6">⭐ Platillos Especiales (Base de Datos)</h2>
             <form method="POST" class="bg-slate-50 p-6 rounded-xl border mb-8 grid grid-cols-1 md:grid-cols-2 gap-4">
                 <input type="text" name="nombre" placeholder="Nombre" required class="px-4 py-2 border rounded-xl text-xs">
                 <input type="number" step="0.01" name="precio" placeholder="Precio ($)" required class="px-4 py-2 border rounded-xl text-xs">
@@ -449,9 +397,9 @@ $ticket_promedio = $pedidos_totales > 0 ? $ventas_totales / $pedidos_totales : 0
             </div>
         </section>
 
-        <!-- 7. CHEFS -->
+        <!-- 6. CHEFS -->
         <section id="vista-chefs" class="vista-seccion bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
-            <h2 class="text-xl font-extrabold text-slate-900 mb-6">👨‍🍳 Chefs</h2>
+            <h2 class="text-xl font-extrabold text-slate-900 mb-6">👨‍🍳 Chefs (Base de Datos)</h2>
             <form method="POST" class="bg-slate-50 p-6 rounded-xl border mb-8 grid grid-cols-1 md:grid-cols-2 gap-4">
                 <input type="text" name="nombre" placeholder="Nombre" required class="px-4 py-2 border rounded-xl text-xs">
                 <textarea name="bio" rows="2" placeholder="Biografía" required class="px-4 py-2 border rounded-xl text-xs md:col-span-2"></textarea>
@@ -468,31 +416,14 @@ $ticket_promedio = $pedidos_totales > 0 ? $ventas_totales / $pedidos_totales : 0
             </div>
         </section>
 
-        <!-- 8. OPINIONES Y RESEÑAS EN VIVO -->
+        <!-- 7. OPINIONES -->
         <section id="vista-opiniones" class="vista-seccion bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
-            <h2 class="text-xl font-extrabold text-slate-900 mb-6">🏆 Reseñas y Experiencias de Clientes</h2>
-            
-            <!-- Formulario para dejar reseña en vivo -->
-            <form method="POST" class="bg-slate-50 p-6 rounded-xl border mb-8 grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                    <label class="block text-xs font-bold text-slate-600 mb-1">Tu Nombre</label>
-                    <input type="text" name="nombre_cliente" placeholder="Ej. Sofía Garza" required class="w-full px-4 py-2 border rounded-xl text-xs">
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-slate-600 mb-1">Calificación (Estrellas)</label>
-                    <select name="estrellas" class="w-full px-4 py-2 border rounded-xl text-xs bg-white font-semibold">
-                        <option value="5">⭐⭐⭐⭐⭐ Excelente (5/5)</option>
-                        <option value="4">⭐⭐⭐⭐ Muy Bueno (4/5)</option>
-                        <option value="3">⭐⭐⭐ Regular (3/5)</option>
-                    </select>
-                </div>
-                <div class="md:col-span-2">
-                    <label class="block text-xs font-bold text-slate-600 mb-1">Comentario o Reseña</label>
-                    <textarea name="comentario_resena" placeholder="Escribe tu experiencia..." rows="2" required class="w-full px-4 py-2 border rounded-xl text-xs"></textarea>
-                </div>
-                <button type="submit" name="enviar_reseña" class="bg-wine text-white font-bold px-6 py-2 rounded-xl text-xs shadow w-max">Publicar Reseña</button>
+            <h2 class="text-xl font-extrabold text-slate-900 mb-6">🏆 Opiniones (Base de Datos)</h2>
+            <form method="POST" class="bg-slate-50 p-6 rounded-xl border mb-8 grid grid-cols-1 gap-4">
+                <input type="text" name="cliente" placeholder="Cliente" required class="px-4 py-2 border rounded-xl text-xs">
+                <textarea name="comentario" placeholder="Comentario" rows="2" required class="px-4 py-2 border rounded-xl text-xs"></textarea>
+                <button type="submit" name="guardar_opinion" class="bg-wine text-white font-bold px-6 py-2 rounded-xl text-xs shadow w-max">➕ Agregar</button>
             </form>
-
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <?php while($row = $resultado_opiniones->fetch_assoc()): ?>
                 <div class="border rounded-xl p-6 relative bg-white">
@@ -504,9 +435,9 @@ $ticket_promedio = $pedidos_totales > 0 ? $ventas_totales / $pedidos_totales : 0
             </div>
         </section>
 
-        <!-- 9. SUCURSALES -->
+        <!-- 8. SUCURSALES -->
         <section id="vista-sucursales" class="vista-seccion bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
-            <h2 class="text-xl font-extrabold text-slate-900 mb-6">📍 Sucursales</h2>
+            <h2 class="text-xl font-extrabold text-slate-900 mb-6">📍 Sucursales (Base de Datos)</h2>
             <form method="POST" class="bg-slate-50 p-6 rounded-xl border mb-8 grid grid-cols-1 gap-4">
                 <input type="text" name="nombre" placeholder="Sucursal" required class="px-4 py-2 border rounded-xl text-xs">
                 <textarea name="info" placeholder="Info" rows="2" required class="px-4 py-2 border rounded-xl text-xs"></textarea>
@@ -523,9 +454,9 @@ $ticket_promedio = $pedidos_totales > 0 ? $ventas_totales / $pedidos_totales : 0
             </div>
         </section>
 
-        <!-- 10. CONTACTO -->
+        <!-- 9. CONTACTO -->
         <section id="vista-contacto" class="vista-seccion bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
-            <h2 class="text-xl font-extrabold text-slate-900 mb-6">📞 Contacto</h2>
+            <h2 class="text-xl font-extrabold text-slate-900 mb-6">📞 Contacto (Base de Datos)</h2>
             <form method="POST" class="bg-slate-50 p-6 rounded-xl border mb-8 grid grid-cols-1 gap-4">
                 <input type="text" name="canal" placeholder="Canal" required class="px-4 py-2 border rounded-xl text-xs">
                 <textarea name="info" placeholder="Detalle" rows="2" required class="px-4 py-2 border rounded-xl text-xs"></textarea>
@@ -542,7 +473,7 @@ $ticket_promedio = $pedidos_totales > 0 ? $ventas_totales / $pedidos_totales : 0
             </div>
         </section>
 
-        <!-- 11. CUESTIONARIO -->
+        <!-- 10. CUESTIONARIO -->
         <section id="vista-cuestionario" class="vista-seccion bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
             <h2 class="text-xl font-extrabold text-slate-900 mb-6">📊 Cuestionario de Satisfacción</h2>
             <form method="POST" class="bg-slate-50 p-6 rounded-xl border flex flex-col gap-4">
@@ -560,7 +491,7 @@ $ticket_promedio = $pedidos_totales > 0 ? $ventas_totales / $pedidos_totales : 0
             </form>
         </section>
 
-        <!-- 12. SUSTENTABILIDAD -->
+        <!-- 11. SUSTENTABILIDAD -->
         <section id="vista-sustentabilidad" class="vista-seccion bg-gradient-to-br from-emerald-900 to-emerald-950 text-white rounded-2xl p-8 shadow-lg">
             <h2 class="text-2xl font-black mb-3">🌱 Compromiso de Sustentabilidad Sabor Ofertin</h2>
             <p class="text-emerald-100 text-xs md:text-sm max-w-3xl leading-relaxed">
@@ -568,7 +499,7 @@ $ticket_promedio = $pedidos_totales > 0 ? $ventas_totales / $pedidos_totales : 0
             </p>
         </section>
 
-        <!-- 13. SECCIÓN Y MULTIMEDIA -->
+        <!-- 12. SECCIÓN Y MULTIMEDIA -->
         <section id="vista-seccion" class="vista-seccion bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
             <h2 class="text-xl font-extrabold text-slate-900 mb-4">📖 Sección y Multimedia</h2>
             <p class="text-xs text-slate-500 mb-6">Selecciona una opción del menú desplegable para consultar nuestra filosofía institucional o contenido multimedia.</p>
@@ -601,9 +532,11 @@ $ticket_promedio = $pedidos_totales > 0 ? $ventas_totales / $pedidos_totales : 0
 
     </main>
 
-    <!-- PIE DE PÁGINA CON REDES Y UBICACIÓN -->
+    <!-- PIE DE PÁGINA (FOOTER) CON HIPERVÍNCULOS A REDES SOCIALES Y DIRECCIÓN -->
     <footer class="bg-wine text-white py-6 px-4 border-t-4 border-red-900 mt-auto text-center text-xs">
         <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+            
+            <!-- Dirección / Ubicación con enlace simulado -->
             <div class="flex items-center gap-2">
                 <i class="fa-solid fa-location-dot text-red-200"></i>
                 <a href="https://maps.google.com" target="_blank" class="hover:underline text-red-100 font-medium">
@@ -611,6 +544,7 @@ $ticket_promedio = $pedidos_totales > 0 ? $ventas_totales / $pedidos_totales : 0
                 </a>
             </div>
 
+            <!-- Redes Sociales con hipervínculos -->
             <div class="flex items-center gap-6">
                 <a href="https://facebook.com" target="_blank" class="hover:text-red-200 transition flex items-center gap-1.5 font-semibold">
                     <i class="fa-brands fa-facebook text-sm"></i> Facebook
@@ -693,47 +627,6 @@ $ticket_promedio = $pedidos_totales > 0 ? $ventas_totales / $pedidos_totales : 0
             document.getElementById('inputTotal').value = total;
         }
 
-        // Función para imprimir ticket de cobro
-        function imprimirTicket() {
-            const keys = Object.keys(carrito);
-            if (keys.length === 0) {
-                alert("No hay platillos en el pedido actual para imprimir.");
-                return;
-            }
-            const mesa = document.getElementById('selectMesa').value;
-            const total = document.getElementById('txtTotal').innerText;
-            
-            let contenidoTicket = `--- TICKET DE COBRO ---\n`;
-            contenidoTicket += `Restaurante: Sabor Ofertin\n`;
-            contenidoTicket += `Mesa: ${mesa}\n`;
-            contenidoTicket += `------------------------\n`;
-            keys.forEach(nombre => {
-                let item = carrito[nombre];
-                let sub = item.precio * item.cantidad;
-                contenidoTicket += `${item.cantidad}x ${nombre} - $${sub.toFixed(2)}\n`;
-            });
-            contenidoTicket += `------------------------\n`;
-            contenidoTicket += `TOTAL A PAGAR: ${total}\n`;
-            contenidoTicket += `¡Gracias por su preferencia!\n`;
-
-            const ventanaImpresion = window.open('', '', 'width=400,height=600');
-            ventanaImpresion.document.write('<pre style="font-family: monospace; font-size: 14px; padding: 20px;">' + contenidoTicket + '</pre>');
-            ventanaImpresion.document.close();
-            ventanaImpresion.print();
-        }
-
-        // Sistema de cambio de rol (Admin vs Mesero)
-        function cambiarRol(rol) {
-            const elementosAdmin = document.querySelectorAll('.rol-admin');
-            elementosAdmin.forEach(el => {
-                if (rol === 'mesero') {
-                    el.style.display = 'none';
-                } else {
-                    el.style.display = 'block';
-                }
-            });
-        }
-
         function filtrarPlatillos() {
             const filtro = document.getElementById('filtroCategoria').value.toLowerCase();
             const tarjetas = document.querySelectorAll('.platillo-card');
@@ -742,6 +635,7 @@ $ticket_promedio = $pedidos_totales > 0 ? $ventas_totales / $pedidos_totales : 0
 
             tarjetas.forEach(card => {
                 const categoria = card.getAttribute('data-categoria').toLowerCase();
+                
                 if (filtro === 'todos' || categoria === filtro) {
                     card.style.display = 'flex';
                     visibles++;
@@ -777,11 +671,11 @@ $ticket_promedio = $pedidos_totales > 0 ? $ventas_totales / $pedidos_totales : 0
             if (val === 'mision') {
                 boxTexto.classList.remove('hidden');
                 titulo.innerText = "🎯 Nuestra Misión Institucional";
-                texto.innerText = "En Sabor Ofertin, nuestra misión fundamental desde nuestra fundación en 1998 ha sido consolidarnos como un referente gastronómico de excelencia, ofreciendo a cada uno de nuestros comensales una experiencia culinaria excepcional...";
+                texto.innerText = "En Sabor Ofertin, nuestra misión fundamental desde nuestra fundación en 1998 ha sido consolidarnos como un referente gastronómico de excelencia, ofreciendo a cada uno de nuestros comensales una experiencia culinaria excepcional que fusiona la más alta calidad, frescura y sabor tradicional con un servicio cálido y eficiente. Nos comprometemos rigurosamente a seleccionar ingredientes locales de óptima procedencia, apoyando de manera directa a los productores de la región y promoviendo prácticas sostenibles que minimicen nuestro impacto ambiental. Aspiramos a ser un espacio donde las familias, amigos y amantes de la buena comida puedan disfrutar de platillos elaborados con pasión, dedicación y estrictos estándares de higiene, garantizando siempre una relación calidad-precio justa que demuestre nuestro profundo agradecimiento a la comunidad que nos ha honrado con su preferencia a lo largo de más de dos décadas de trayectoria ininterrumpida.";
             } else if (val === 'vision') {
                 boxTexto.classList.remove('hidden');
                 titulo.innerText = "🔭 Nuestra Visión Estratégica";
-                texto.innerText = "Nuestra visión para el futuro en Sabor Ofertin es expandir nuestro concepto culinario responsable e innovador a nuevos horizontes...";
+                texto.innerText = "Nuestra visión para el futuro en Sabor Ofertin es expandir nuestro concepto culinario responsable e innovador a nuevos horizontes, posicionándonos firmemente como el restaurante líder indiscutible en la preferencia regional gracias a nuestra capacidad de adaptación, mejora continua y compromiso con la sustentabilidad ecológica. Proyectamos un crecimiento basado en la optimización de procesos mediante herramientas tecnológicas avanzadas —como nuestro sistema integral de gestión y POS digital—, manteniendo siempre el toque humano y artesanal que caracteriza a nuestros platillos estelares. Buscamos consolidar una red de alianzas sólidas con productores agroindustriales locales, fomentar el desarrollo profesional y humano de nuestro equipo de colaboradores, y establecernos como pioneros en la implementación de prácticas de economía circular, tales como el uso de empaques 100% compostables y la valorización de residuos orgánicos, garantizando así un legado de sabor, responsabilidad y bienestar para las futuras generaciones.";
             } else if (val === 'multimedia') {
                 boxMedia.classList.remove('hidden');
             }
