@@ -198,11 +198,25 @@ $resultado_pedidos = $conexion->query("SELECT * FROM pedidos ORDER BY id DESC");
 
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <div class="lg:col-span-2">
-                    <h2 class="text-xl font-extrabold text-slate-900 mb-6">Catálogo de Platillos (Base de Datos)</h2>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 max-h-[600px] overflow-y-auto p-2">
+                    <!-- CABECERA DEL CATÁLOGO CON EL MENÚ DESPLEGABLE EN EL CÍRCULO AZUL -->
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-3">
+                        <h2 class="text-xl font-extrabold text-slate-900">Catálogo de Platillos</h2>
+                        <select id="filtroCategoria" onchange="filtrarPlatillos()" class="px-3 py-1.5 border rounded-xl text-xs font-bold bg-slate-50 text-slate-700 shadow-sm">
+                            <option value="todos">📂 Todas las Categorías</option>
+                            <option value="Bebidas">🥤 Bebidas</option>
+                            <option value="Comida Rapida">🍔 Comida Rápida</option>
+                            <option value="Platillos">🍲 Platillos / Ensaladas</option>
+                            <option value="Postres">🍰 Postres</option>
+                        </select>
+                    </div>
+
+                    <div id="contenedorPlatillos" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 max-h-[600px] overflow-y-auto p-2">
                         <?php if ($resultado_menu && $resultado_menu->num_rows > 0): ?>
-                            <?php while($row = $resultado_menu->fetch_assoc()): ?>
-                            <div class="border rounded-xl overflow-hidden shadow-sm bg-white flex flex-col justify-between">
+                            <?php while($row = $resultado_menu->fetch_assoc()): 
+                                // Nota: Asegúrate de tener una columna 'categoria' en tu tabla menu. Si no la tienes, toma por defecto 'Platillos'
+                                $cat = isset($row['categoria']) ? $row['categoria'] : 'Platillos';
+                            ?>
+                            <div class="platillo-card border rounded-xl overflow-hidden shadow-sm bg-white flex flex-col justify-between" data-categoria="<?= $cat ?>">
                                 <img src="<?= $row['imagen'] ?>" class="w-full h-28 object-cover" onerror="this.src='https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400'">
                                 <div class="p-3">
                                     <h3 class="font-bold text-xs text-slate-800"><?= $row['nombre'] ?></h3>
@@ -573,6 +587,21 @@ $resultado_pedidos = $conexion->query("SELECT * FROM pedidos ORDER BY id DESC");
             container.innerHTML = html;
             document.getElementById('txtTotal').innerText = `$${total.toFixed(2)}`;
             document.getElementById('inputTotal').value = total;
+        }
+
+        // Función para filtrar platillos por categoría dinámicamente
+        function filtrarPlatillos() {
+            const categoriaSeleccionada = document.getElementById('filtroCategoria').value;
+            const tarjetas = document.querySelectorAll('.platillo-card');
+
+            tarjetas.forEach(card => {
+                const categoriaCard = card.getAttribute('data-categoria');
+                if (categoriaSeleccionada === 'todos' || categoriaCard === categoriaSeleccionada) {
+                    card.style.display = 'flex';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
         }
 
         function cambiarVista(idVista, event) {
