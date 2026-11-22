@@ -204,8 +204,8 @@ $resultado_pedidos = $conexion->query("SELECT * FROM pedidos ORDER BY id DESC");
                         <select id="filtroCategoria" onchange="filtrarPlatillos()" class="px-3 py-1.5 border rounded-xl text-xs font-bold bg-slate-50 text-slate-700 shadow-sm">
                             <option value="todos">📂 Todas las Categorías</option>
                             <option value="bebida">🥤 Bebidas</option>
-                            <option value="rapida">🍔 Comida Rápida</option>
-                            <option value="platillo">🍲 Platillos / Ensaladas</option>
+                            <option value="rapida">🍔 Comida Rápida (Alitas, Hamburguesas, etc.)</option>
+                            <option value="platillo">🍲 Platillos / Ensaladas / Sopas</option>
                             <option value="postre">🍰 Postres</option>
                         </select>
                     </div>
@@ -213,10 +213,19 @@ $resultado_pedidos = $conexion->query("SELECT * FROM pedidos ORDER BY id DESC");
                     <div id="contenedorPlatillos" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 max-h-[600px] overflow-y-auto p-2">
                         <?php if ($resultado_menu && $resultado_menu->num_rows > 0): ?>
                             <?php while($row = $resultado_menu->fetch_assoc()): 
-                                // Detectamos la categoría de la BD (si no existe, toma 'platillo' por defecto)
-                                $cat_db = isset($row['categoria']) ? strtolower($row['categoria']) : 'platillo';
+                                $nombre_platillo = strtolower($row['nombre']);
+                                // Clasificación inteligente automática basada en el nombre del platillo
+                                if (strpos($nombre_platillo, 'alita') !== false || strpos($nombre_platillo, 'hamburguesa') !== false || strpos($nombre_platillo, 'papas') !== false || strpos($nombre_platillo, 'pizza') !== false) {
+                                    $cat_detectada = 'rapida';
+                                } elseif (strpos($nombre_platillo, 'agua') !== false || strpos($nombre_platillo, 'jugo') !== false || strpos($nombre_platillo, 'refresco') !== false || strpos($nombre_platillo, 'cafe') !== false) {
+                                    $cat_detectada = 'bebida';
+                                } elseif (strpos($nombre_platillo, 'pastel') !== false || strpos($nombre_platillo, 'postre') !== false || strpos($nombre_platillo, 'hot cake') !== false || strpos($nombre_platillo, 'panqueque') !== false) {
+                                    $cat_detectada = 'postre';
+                                } else {
+                                    $cat_detectada = 'platillo'; // Ensaladas, sopas, cremas, consomés entran aquí
+                                }
                             ?>
-                            <div class="platillo-card border rounded-xl overflow-hidden shadow-sm bg-white flex flex-col justify-between" data-categoria="<?= $cat_db ?>">
+                            <div class="platillo-card border rounded-xl overflow-hidden shadow-sm bg-white flex flex-col justify-between" data-categoria="<?= $cat_detectada ?>">
                                 <img src="<?= $row['imagen'] ?>" class="w-full h-28 object-cover" onerror="this.src='https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400'">
                                 <div class="p-3">
                                     <h3 class="font-bold text-xs text-slate-800"><?= $row['nombre'] ?></h3>
@@ -230,7 +239,7 @@ $resultado_pedidos = $conexion->query("SELECT * FROM pedidos ORDER BY id DESC");
                         <?php endif; ?>
                     </div>
                     <!-- Mensaje si no hay resultados en el filtro -->
-                    <p id="sinResultados" class="text-slate-400 italic text-xs mt-4 hidden">No hay platillos en esta categoría o la base de datos no tiene asignada dicha categoría.</p>
+                    <p id="sinResultados" class="text-slate-400 italic text-xs mt-4 hidden">No hay platillos registrados en esta categoría.</p>
                 </div>
 
                 <div class="bg-slate-50 border border-slate-200 rounded-2xl p-6 shadow-sm flex flex-col justify-between">
@@ -458,7 +467,7 @@ $resultado_pedidos = $conexion->query("SELECT * FROM pedidos ORDER BY id DESC");
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <?php while($row = $resultado_contacto->fetch_assoc()): ?>
                 <div class="border rounded-xl p-6 relative bg-white">
-                    <a href="index.php?eliminar_contacto=<?= $row['id'] ?>" onclick="return confirm('¿Eliminar?')" class="absolute top-4 right-4 bg-red-100 text-red-700 px-2.5 py-1 rounded-lg text-xs font-bold">🗑️</a>
+                    <a href="index.php?eliminar_contacto=<?= $row['id'] ?>" onclick="return confirm('¿Eliminar?')" class="absolute top-4 right-4 bg-red-100 text-red-2.5 py-1 rounded-lg text-xs font-bold">🗑️</a>
                     <h3 class="font-bold text-base text-slate-900 mb-2"><?= $row['canal'] ?></h3>
                     <p class="text-slate-600 text-xs"><?= $row['info'] ?></p>
                 </div>
@@ -591,7 +600,7 @@ $resultado_pedidos = $conexion->query("SELECT * FROM pedidos ORDER BY id DESC");
             document.getElementById('inputTotal').value = total;
         }
 
-        // Función mejorada y flexible para filtrar platillos
+        // Función inteligente para clasificar y filtrar platillos automáticamente
         function filtrarPlatillos() {
             const filtro = document.getElementById('filtroCategoria').value.toLowerCase();
             const tarjetas = document.querySelectorAll('.platillo-card');
@@ -601,7 +610,7 @@ $resultado_pedidos = $conexion->query("SELECT * FROM pedidos ORDER BY id DESC");
             tarjetas.forEach(card => {
                 const categoria = card.getAttribute('data-categoria').toLowerCase();
                 
-                if (filtro === 'todos' || categoria.includes(filtro)) {
+                if (filtro === 'todos' || categoria === filtro) {
                     card.style.display = 'flex';
                     visibles++;
                 } else {
