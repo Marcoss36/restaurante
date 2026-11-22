@@ -188,9 +188,9 @@ $resultado_pedidos = $conexion->query("SELECT * FROM pedidos ORDER BY id DESC");
     <!-- CONTENIDO PRINCIPAL -->
     <main class="flex-grow max-w-7xl mx-auto px-4 py-8 w-full relative">
         
-        <!-- MASCOTA EN EL ÁREA DERECHA EXACTAMENTE DONDE INDICASTE (SOLO EN MENÚ) -->
-        <div id="mascotaMenuUnica" class="hidden xl:block" style="position: fixed; bottom: 30px; right: 30px; z-index: 50; pointer-events: none;">
-            <img src="mascota.png" alt="Mascota Sabor Ofertin" onerror="this.src='logo.png'" style="width: 260px; height: auto; object-fit: contain; mix-blend-mode: multiply;">
+        <!-- MASCOTA MÁS PEQUEÑA Y ELEVADA PARA QUE NO TOQUE LO ROJO (SOLO EN MENÚ) -->
+        <div id="mascotaMenuUnica" class="hidden xl:block" style="position: fixed; bottom: 85px; right: 40px; z-index: 50; pointer-events: none;">
+            <img src="mascota.png" alt="Mascota Sabor Ofertin" onerror="this.src='logo.png'" style="width: 170px; height: auto; object-fit: contain; mix-blend-mode: multiply;">
         </div>
 
         <!-- 1. MENÚ & POS -->
