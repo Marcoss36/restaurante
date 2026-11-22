@@ -198,25 +198,25 @@ $resultado_pedidos = $conexion->query("SELECT * FROM pedidos ORDER BY id DESC");
 
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <div class="lg:col-span-2">
-                    <!-- CABECERA DEL CATÁLOGO CON EL MENÚ DESPLEGABLE EN EL CÍRCULO AZUL -->
+                    <!-- CABECERA DEL CATÁLOGO CON EL MENÚ DESPLEGABLE -->
                     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-3">
                         <h2 class="text-xl font-extrabold text-slate-900">Catálogo de Platillos</h2>
                         <select id="filtroCategoria" onchange="filtrarPlatillos()" class="px-3 py-1.5 border rounded-xl text-xs font-bold bg-slate-50 text-slate-700 shadow-sm">
                             <option value="todos">📂 Todas las Categorías</option>
-                            <option value="Bebidas">🥤 Bebidas</option>
-                            <option value="Comida Rapida">🍔 Comida Rápida</option>
-                            <option value="Platillos">🍲 Platillos / Ensaladas</option>
-                            <option value="Postres">🍰 Postres</option>
+                            <option value="bebida">🥤 Bebidas</option>
+                            <option value="rapida">🍔 Comida Rápida</option>
+                            <option value="platillo">🍲 Platillos / Ensaladas</option>
+                            <option value="postre">🍰 Postres</option>
                         </select>
                     </div>
 
                     <div id="contenedorPlatillos" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 max-h-[600px] overflow-y-auto p-2">
                         <?php if ($resultado_menu && $resultado_menu->num_rows > 0): ?>
                             <?php while($row = $resultado_menu->fetch_assoc()): 
-                                // Nota: Asegúrate de tener una columna 'categoria' en tu tabla menu. Si no la tienes, toma por defecto 'Platillos'
-                                $cat = isset($row['categoria']) ? $row['categoria'] : 'Platillos';
+                                // Detectamos la categoría de la BD (si no existe, toma 'platillo' por defecto)
+                                $cat_db = isset($row['categoria']) ? strtolower($row['categoria']) : 'platillo';
                             ?>
-                            <div class="platillo-card border rounded-xl overflow-hidden shadow-sm bg-white flex flex-col justify-between" data-categoria="<?= $cat ?>">
+                            <div class="platillo-card border rounded-xl overflow-hidden shadow-sm bg-white flex flex-col justify-between" data-categoria="<?= $cat_db ?>">
                                 <img src="<?= $row['imagen'] ?>" class="w-full h-28 object-cover" onerror="this.src='https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400'">
                                 <div class="p-3">
                                     <h3 class="font-bold text-xs text-slate-800"><?= $row['nombre'] ?></h3>
@@ -229,6 +229,8 @@ $resultado_pedidos = $conexion->query("SELECT * FROM pedidos ORDER BY id DESC");
                             <p class="text-slate-500 italic col-span-full">No hay platillos registrados.</p>
                         <?php endif; ?>
                     </div>
+                    <!-- Mensaje si no hay resultados en el filtro -->
+                    <p id="sinResultados" class="text-slate-400 italic text-xs mt-4 hidden">No hay platillos en esta categoría o la base de datos no tiene asignada dicha categoría.</p>
                 </div>
 
                 <div class="bg-slate-50 border border-slate-200 rounded-2xl p-6 shadow-sm flex flex-col justify-between">
@@ -589,19 +591,29 @@ $resultado_pedidos = $conexion->query("SELECT * FROM pedidos ORDER BY id DESC");
             document.getElementById('inputTotal').value = total;
         }
 
-        // Función para filtrar platillos por categoría dinámicamente
+        // Función mejorada y flexible para filtrar platillos
         function filtrarPlatillos() {
-            const categoriaSeleccionada = document.getElementById('filtroCategoria').value;
+            const filtro = document.getElementById('filtroCategoria').value.toLowerCase();
             const tarjetas = document.querySelectorAll('.platillo-card');
+            const mensajeVacio = document.getElementById('sinResultados');
+            let visibles = 0;
 
             tarjetas.forEach(card => {
-                const categoriaCard = card.getAttribute('data-categoria');
-                if (categoriaSeleccionada === 'todos' || categoriaCard === categoriaSeleccionada) {
+                const categoria = card.getAttribute('data-categoria').toLowerCase();
+                
+                if (filtro === 'todos' || categoria.includes(filtro)) {
                     card.style.display = 'flex';
+                    visibles++;
                 } else {
                     card.style.display = 'none';
                 }
             });
+
+            if (visibles === 0) {
+                mensajeVacio.classList.remove('hidden');
+            } else {
+                mensajeVacio.classList.add('hidden');
+            }
         }
 
         function cambiarVista(idVista, event) {
