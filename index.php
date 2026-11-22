@@ -186,15 +186,16 @@ $resultado_pedidos = $conexion->query("SELECT * FROM pedidos ORDER BY id DESC");
     </header>
 
     <!-- CONTENIDO PRINCIPAL -->
-    <main class="flex-grow max-w-7xl mx-auto px-4 py-8 w-full relative">
+    <main class="flex-grow max-w-7xl mx-auto px-4 py-8 w-full">
         
-        <!-- MASCOTA GRANDE, ESTÁTICA Y SIN CÍRCULO (SOLO EN MENÚ) -->
-        <div id="mascotaMenuUnica" class="hidden xl:block" style="position: fixed; bottom: 20px; left: 16px; z-index: 50;">
-            <img src="mascota.png" alt="Mascota Sabor Ofertin" onerror="this.src='logo.png'" style="width: 260px; height: auto; object-fit: contain; filter: drop-shadow(0 10px 15px rgba(0,0,0,0.25));">
-        </div>
-
         <!-- 1. MENÚ & POS -->
-        <section id="vista-menu" class="vista-seccion active bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+        <section id="vista-menu" class="vista-seccion active bg-white rounded-2xl shadow-sm border border-slate-200 p-6 relative overflow-hidden">
+            
+            <!-- MASCOTA INTEGRADA EN EL CONTENEDOR BLANCO (AUMENTADA 50% Y CON TRUCO MIX-BLEND PARA QUITAR EL FONDO BLANCO) -->
+            <div id="mascotaMenuUnica" class="hidden xl:block" style="position: absolute; bottom: 20px; left: 20px; z-index: 10; pointer-events: none;">
+                <img src="mascota.png" alt="Mascota Sabor Ofertin" onerror="this.src='logo.png'" style="width: 280px; height: auto; object-fit: contain; mix-blend-mode: multiply;">
+            </div>
+
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <div class="lg:col-span-2">
                     <h2 class="text-xl font-extrabold text-slate-900 mb-6">Catálogo de Platillos (Base de Datos)</h2>
@@ -510,7 +511,7 @@ $resultado_pedidos = $conexion->query("SELECT * FROM pedidos ORDER BY id DESC");
 
     <!-- Pie de página -->
     <footer class="bg-wine text-white py-6 border-t-4 border-red-900 mt-auto text-center text-xs">
-        <p>&copy; 2026 Sabor Ofertin. Conectado a MySQL en Clever Cloud.</p>
+        <p>&copy; 2026 Sabor Ofertin. Conectado a MySQL en Cloud.</p>
     </footer>
 
     <script>
@@ -554,7 +555,7 @@ $resultado_pedidos = $conexion->query("SELECT * FROM pedidos ORDER BY id DESC");
             document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('bg-white', 'text-wine'));
             event.currentTarget.classList.add('bg-white', 'text-wine');
 
-            // Mostrar la mascota grande y fija SOLAMENTE en la sección del menú
+            // Mostrar la mascota SOLAMENTE en la sección del menú
             const mascota = document.getElementById('mascotaMenuUnica');
             if (mascota) {
                 if (idVista === 'menu') {
