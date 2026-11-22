@@ -191,8 +191,8 @@ $resultado_pedidos = $conexion->query("SELECT * FROM pedidos ORDER BY id DESC");
         <!-- 1. MENÚ & POS -->
         <section id="vista-menu" class="vista-seccion active bg-white rounded-2xl shadow-sm border border-slate-200 p-6 relative overflow-hidden">
             
-            <!-- MASCOTA INTEGRADA EN EL CONTENEDOR BLANCO (AUMENTADA 50% Y CON TRUCO MIX-BLEND PARA QUITAR EL FONDO BLANCO) -->
-            <div id="mascotaMenuUnica" class="hidden xl:block" style="position: absolute; bottom: 20px; left: 20px; z-index: 10; pointer-events: none;">
+            <!-- MASCOTA INTEGRADA EN LA PARTE DERECHA DEL CONTENEDOR BLANCO (AUMENTADA 50% Y SIN FONDO BLANCO) -->
+            <div id="mascotaMenuUnica" class="hidden xl:block" style="position: absolute; bottom: 20px; right: 20px; z-index: 10; pointer-events: none;">
                 <img src="mascota.png" alt="Mascota Sabor Ofertin" onerror="this.src='logo.png'" style="width: 280px; height: auto; object-fit: contain; mix-blend-mode: multiply;">
             </div>
 
