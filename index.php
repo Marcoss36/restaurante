@@ -214,7 +214,6 @@ $resultado_pedidos = $conexion->query("SELECT * FROM pedidos ORDER BY id DESC");
                         <?php if ($resultado_menu && $resultado_menu->num_rows > 0): ?>
                             <?php while($row = $resultado_menu->fetch_assoc()): 
                                 $nombre_platillo = strtolower($row['nombre']);
-                                // Clasificación inteligente automática basada en el nombre del platillo
                                 if (strpos($nombre_platillo, 'alita') !== false || strpos($nombre_platillo, 'hamburguesa') !== false || strpos($nombre_platillo, 'papas') !== false || strpos($nombre_platillo, 'pizza') !== false) {
                                     $cat_detectada = 'rapida';
                                 } elseif (strpos($nombre_platillo, 'agua') !== false || strpos($nombre_platillo, 'jugo') !== false || strpos($nombre_platillo, 'refresco') !== false || strpos($nombre_platillo, 'cafe') !== false) {
@@ -222,7 +221,7 @@ $resultado_pedidos = $conexion->query("SELECT * FROM pedidos ORDER BY id DESC");
                                 } elseif (strpos($nombre_platillo, 'pastel') !== false || strpos($nombre_platillo, 'postre') !== false || strpos($nombre_platillo, 'hot cake') !== false || strpos($nombre_platillo, 'panqueque') !== false) {
                                     $cat_detectada = 'postre';
                                 } else {
-                                    $cat_detectada = 'platillo'; // Ensaladas, sopas, cremas, consomés entran aquí
+                                    $cat_detectada = 'platillo';
                                 }
                             ?>
                             <div class="platillo-card border rounded-xl overflow-hidden shadow-sm bg-white flex flex-col justify-between" data-categoria="<?= $cat_detectada ?>">
@@ -238,7 +237,6 @@ $resultado_pedidos = $conexion->query("SELECT * FROM pedidos ORDER BY id DESC");
                             <p class="text-slate-500 italic col-span-full">No hay platillos registrados.</p>
                         <?php endif; ?>
                     </div>
-                    <!-- Mensaje si no hay resultados en el filtro -->
                     <p id="sinResultados" class="text-slate-400 italic text-xs mt-4 hidden">No hay platillos registrados en esta categoría.</p>
                 </div>
 
@@ -467,7 +465,7 @@ $resultado_pedidos = $conexion->query("SELECT * FROM pedidos ORDER BY id DESC");
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <?php while($row = $resultado_contacto->fetch_assoc()): ?>
                 <div class="border rounded-xl p-6 relative bg-white">
-                    <a href="index.php?eliminar_contacto=<?= $row['id'] ?>" onclick="return confirm('¿Eliminar?')" class="absolute top-4 right-4 bg-red-100 text-red-2.5 py-1 rounded-lg text-xs font-bold">🗑️</a>
+                    <a href="index.php?eliminar_contacto=<?= $row['id'] ?>" onclick="return confirm('¿Eliminar?')" class="absolute top-4 right-4 bg-red-100 text-red-700 px-2.5 py-1 rounded-lg text-xs font-bold">🗑️</a>
                     <h3 class="font-bold text-base text-slate-900 mb-2"><?= $row['canal'] ?></h3>
                     <p class="text-slate-600 text-xs"><?= $row['info'] ?></p>
                 </div>
@@ -534,9 +532,38 @@ $resultado_pedidos = $conexion->query("SELECT * FROM pedidos ORDER BY id DESC");
 
     </main>
 
-    <!-- Pie de página -->
-    <footer class="bg-wine text-white py-6 border-t-4 border-red-900 mt-auto text-center text-xs">
-        <p>&copy; 2026 Sabor Ofertin. Conectado a MySQL en Cloud.</p>
+    <!-- PIE DE PÁGINA (FOOTER) CON HIPERVÍNCULOS A REDES SOCIALES Y DIRECCIÓN -->
+    <footer class="bg-wine text-white py-6 px-4 border-t-4 border-red-900 mt-auto text-center text-xs">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+            
+            <!-- Dirección / Ubicación con enlace simulado -->
+            <div class="flex items-center gap-2">
+                <i class="fa-solid fa-location-dot text-red-200"></i>
+                <a href="https://maps.google.com" target="_blank" class="hover:underline text-red-100 font-medium">
+                    Av. Gastronómica #1998, Zona Comercial, Cloud City
+                </a>
+            </div>
+
+            <!-- Redes Sociales con hipervínculos -->
+            <div class="flex items-center gap-6">
+                <a href="https://facebook.com" target="_blank" class="hover:text-red-200 transition flex items-center gap-1.5 font-semibold">
+                    <i class="fa-brands fa-facebook text-sm"></i> Facebook
+                </a>
+                <a href="https://instagram.com" target="_blank" class="hover:text-red-200 transition flex items-center gap-1.5 font-semibold">
+                    <i class="fa-brands fa-instagram text-sm"></i> Instagram
+                </a>
+                <a href="https://tiktok.com" target="_blank" class="hover:text-red-200 transition flex items-center gap-1.5 font-semibold">
+                    <i class="fa-brands fa-tiktok text-sm"></i> TikTok
+                </a>
+                <a href="https://whatsapp.com" target="_blank" class="hover:text-red-200 transition flex items-center gap-1.5 font-semibold">
+                    <i class="fa-brands fa-whatsapp text-sm"></i> WhatsApp
+                </a>
+            </div>
+        </div>
+
+        <div class="mt-4 pt-3 border-t border-red-900 text-red-200 text-[11px]">
+            <p>&copy; 2026 Sabor Ofertin. Conectado a MySQL en Cloud. Todos los derechos reservados.</p>
+        </div>
     </footer>
 
     <script>
@@ -600,7 +627,6 @@ $resultado_pedidos = $conexion->query("SELECT * FROM pedidos ORDER BY id DESC");
             document.getElementById('inputTotal').value = total;
         }
 
-        // Función inteligente para clasificar y filtrar platillos automáticamente
         function filtrarPlatillos() {
             const filtro = document.getElementById('filtroCategoria').value.toLowerCase();
             const tarjetas = document.querySelectorAll('.platillo-card');
