@@ -191,8 +191,8 @@ $resultado_pedidos = $conexion->query("SELECT * FROM pedidos ORDER BY id DESC");
         <!-- 1. MENÚ & POS -->
         <section id="vista-menu" class="vista-seccion active bg-white rounded-2xl shadow-sm border border-slate-200 p-6 relative" style="overflow: visible !important;">
             
-            <!-- MASCOTA DESPLAZADA MÁS A LA DERECHA (EN EL ESPACIO DEL CÍRCULO AMARILLO) -->
-            <div class="hidden xl:block" style="position: absolute; bottom: 30px; right: -190px; z-index: 10; pointer-events: none;">
+            <!-- MASCOTA DESPLAZADA MÁS A LA DERECHA (CENTRO DEL ÁREA AMARILLA) -->
+            <div class="hidden xl:block" style="position: absolute; bottom: 30px; right: -220px; z-index: 10; pointer-events: none;">
                 <img src="mascota.png" alt="Mascota Sabor Ofertin" onerror="this.src='logo.png'" style="width: 170px; height: auto; object-fit: contain; mix-blend-mode: multiply;">
             </div>
 
