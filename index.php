@@ -186,16 +186,15 @@ $resultado_pedidos = $conexion->query("SELECT * FROM pedidos ORDER BY id DESC");
     </header>
 
     <!-- CONTENIDO PRINCIPAL -->
-    <main class="flex-grow max-w-7xl mx-auto px-4 py-8 w-full">
+    <main class="flex-grow max-w-7xl mx-auto px-4 py-8 w-full relative">
         
-        <!-- 1. MENÚ & POS -->
-        <section id="vista-menu" class="vista-seccion active bg-white rounded-2xl shadow-sm border border-slate-200 p-6 relative overflow-hidden">
-            
-            <!-- MASCOTA INTEGRADA EN LA PARTE DERECHA DEL CONTENEDOR BLANCO (AUMENTADA 50% Y SIN FONDO BLANCO) -->
-            <div id="mascotaMenuUnica" class="hidden xl:block" style="position: absolute; bottom: 20px; right: 20px; z-index: 10; pointer-events: none;">
-                <img src="mascota.png" alt="Mascota Sabor Ofertin" onerror="this.src='logo.png'" style="width: 280px; height: auto; object-fit: contain; mix-blend-mode: multiply;">
-            </div>
+        <!-- MASCOTA EN EL ÁREA DERECHA EXACTAMENTE DONDE INDICASTE (SOLO EN MENÚ) -->
+        <div id="mascotaMenuUnica" class="hidden xl:block" style="position: fixed; bottom: 30px; right: 30px; z-index: 50; pointer-events: none;">
+            <img src="mascota.png" alt="Mascota Sabor Ofertin" onerror="this.src='logo.png'" style="width: 260px; height: auto; object-fit: contain; mix-blend-mode: multiply;">
+        </div>
 
+        <!-- 1. MENÚ & POS -->
+        <section id="vista-menu" class="vista-seccion active bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <div class="lg:col-span-2">
                     <h2 class="text-xl font-extrabold text-slate-900 mb-6">Catálogo de Platillos (Base de Datos)</h2>
