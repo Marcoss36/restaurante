@@ -191,7 +191,7 @@ $resultado_pedidos = $conexion->query("SELECT * FROM pedidos ORDER BY id DESC");
         <!-- 1. MENÚ & POS -->
         <section id="vista-menu" class="vista-seccion active bg-white rounded-2xl shadow-sm border border-slate-200 p-6 relative" style="overflow: visible !important;">
             
-            <!-- MASCOTA DESPLAZADA MÁS A LA DERECHA (CENTRO DEL ÁREA AMARILLA) -->
+            <!-- MASCOTA EN EL ÁREA AMARILLA (SE MUEVE CON EL SCROLL) -->
             <div class="hidden xl:block" style="position: absolute; bottom: 30px; right: -220px; z-index: 10; pointer-events: none;">
                 <img src="mascota.png" alt="Mascota Sabor Ofertin" onerror="this.src='logo.png'" style="width: 170px; height: auto; object-fit: contain; mix-blend-mode: multiply;">
             </div>
@@ -525,6 +525,23 @@ $resultado_pedidos = $conexion->query("SELECT * FROM pedidos ORDER BY id DESC");
             actualizarPanelPOS();
         }
 
+        function disminuirDelCarrito(nombre) {
+            if (carrito[nombre]) {
+                carrito[nombre].cantidad -= 1;
+                if (carrito[nombre].cantidad <= 0) {
+                    delete carrito[nombre];
+                }
+            }
+            actualizarPanelPOS();
+        }
+
+        function eliminarDelCarrito(nombre) {
+            if (carrito[nombre]) {
+                delete carrito[nombre];
+            }
+            actualizarPanelPOS();
+        }
+
         function actualizarPanelPOS() {
             const container = document.getElementById('listaCarrito');
             const keys = Object.keys(carrito);
@@ -541,7 +558,17 @@ $resultado_pedidos = $conexion->query("SELECT * FROM pedidos ORDER BY id DESC");
                 let item = carrito[nombre];
                 let sub = item.precio * item.cantidad;
                 total += sub;
-                html += `<div class="flex justify-between items-center mb-1 text-xs"><span>${item.cantidad}x ${nombre}</span><strong>$${sub.toFixed(2)}</strong></div>`;
+                html += `
+                    <div class="flex justify-between items-center mb-2 text-xs border-b pb-1">
+                        <div>
+                            <span class="font-bold">${item.cantidad}x ${nombre}</span>
+                            <span class="text-wine font-semibold block">$${sub.toFixed(2)}</span>
+                        </div>
+                        <div class="flex items-center gap-1.5">
+                            <button type="button" onclick="disminuirDelCarrito('${nombre.replace(/'/g, "\\'")}')" class="bg-slate-200 hover:bg-slate-300 px-1.5 py-0.5 rounded font-bold text-[10px]" title="Quitar uno">-</button>
+                            <button type="button" onclick="eliminarDelCarrito('${nombre.replace(/'/g, "\\'")}')" class="bg-red-100 hover:bg-red-200 text-red-700 px-1.5 py-0.5 rounded font-bold text-[10px]" title="Eliminar platillo">🗑️</button>
+                        </div>
+                    </div>`;
             });
             container.innerHTML = html;
             document.getElementById('txtTotal').innerText = `$${total.toFixed(2)}`;
