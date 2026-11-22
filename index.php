@@ -186,15 +186,16 @@ $resultado_pedidos = $conexion->query("SELECT * FROM pedidos ORDER BY id DESC");
     </header>
 
     <!-- CONTENIDO PRINCIPAL -->
-    <main class="flex-grow max-w-7xl mx-auto px-4 py-8 w-full relative">
+    <main class="flex-grow max-w-7xl mx-auto px-4 py-8 w-full">
         
-        <!-- MASCOTA MÁS PEQUEÑA Y ELEVADA PARA QUE NO TOQUE LO ROJO (SOLO EN MENÚ) -->
-        <div id="mascotaMenuUnica" class="hidden xl:block" style="position: fixed; bottom: 85px; right: 40px; z-index: 50; pointer-events: none;">
-            <img src="mascota.png" alt="Mascota Sabor Ofertin" onerror="this.src='logo.png'" style="width: 170px; height: auto; object-fit: contain; mix-blend-mode: multiply;">
-        </div>
+        <!-- 1. MENÚ & POS (CONTENEDOR BLANCO CON POSICIÓN RELATIVA PARA ANCLAR LA MASCOTA ADENTRO) -->
+        <section id="vista-menu" class="vista-seccion active bg-white rounded-2xl shadow-sm border border-slate-200 p-6 relative overflow-hidden">
+            
+            <!-- MASCOTA INTEGRADA EN EL FONDO BLANCO (SE MUEVE CON EL SCROLL Y NO TOCA LO ROJO) -->
+            <div style="position: absolute; bottom: 20px; right: 35px; z-index: 10; pointer-events: none;">
+                <img src="mascota.png" alt="Mascota Sabor Ofertin" onerror="this.src='logo.png'" style="width: 160px; height: auto; object-fit: contain; mix-blend-mode: multiply;">
+            </div>
 
-        <!-- 1. MENÚ & POS -->
-        <section id="vista-menu" class="vista-seccion active bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <div class="lg:col-span-2">
                     <h2 class="text-xl font-extrabold text-slate-900 mb-6">Catálogo de Platillos (Base de Datos)</h2>
@@ -553,16 +554,6 @@ $resultado_pedidos = $conexion->query("SELECT * FROM pedidos ORDER BY id DESC");
             
             document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('bg-white', 'text-wine'));
             event.currentTarget.classList.add('bg-white', 'text-wine');
-
-            // Mostrar la mascota SOLAMENTE en la sección del menú
-            const mascota = document.getElementById('mascotaMenuUnica');
-            if (mascota) {
-                if (idVista === 'menu') {
-                    mascota.style.display = 'block';
-                } else {
-                    mascota.style.display = 'none';
-                }
-            }
         }
 
         function mostrarSeccionSeleccionada(val) {
