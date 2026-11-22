@@ -148,13 +148,13 @@ $resultado_pedidos = $conexion->query("SELECT * FROM pedidos ORDER BY id DESC");
         }
         .tab-btn.active, .tab-btn:hover { background-color: #ffffff; color: #991b1b; border-color: #ffffff; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); }
         
-        /* Animación suave para la mascota */
+        /* Animación suave para la mascota grande */
         @keyframes flotar {
             0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-6px); }
+            50% { transform: translateY(-8px); }
         }
-        .mascota-flotante {
-            animation: flotar 3s ease-in-out infinite;
+        .mascota-grande {
+            animation: flotar 3.5s ease-in-out infinite;
         }
     </style>
 </head>
@@ -195,8 +195,14 @@ $resultado_pedidos = $conexion->query("SELECT * FROM pedidos ORDER BY id DESC");
     </header>
 
     <!-- CONTENIDO PRINCIPAL -->
-    <main class="flex-grow max-w-7xl mx-auto px-4 py-8 w-full">
+    <main class="flex-grow max-w-7xl mx-auto px-4 py-8 w-full relative">
         
+        <!-- MASCOTA MÁS GRANDE (SOLO VISIBLE EN SECCIÓN MENÚ Y PANTALLAS AMPLIAS) -->
+        <div id="mascotaMenuUnica" class="mascota-grande hidden xl:flex flex-col items-center" style="position: fixed; bottom: 40px; left: 16px; z-index: 50;">
+            <img src="mascota.png" alt="Mascota Sabor Ofertin" onerror="this.src='logo.png'" style="width: 140px; height: 140px; border-radius: 50%; object-fit: cover; border: 4px solid #991b1b; box-shadow: 0 10px 25px rgba(0,0,0,0.3); background: #fce7f3;">
+            <span style="font-size: 12px; font-weight: 800; background: #991b1b; color: white; padding: 4px 12px; border-radius: 9999px; margin-top: -12px; box-shadow: 0 3px 8px rgba(0,0,0,0.25);">¡Hola! 🐾</span>
+        </div>
+
         <!-- 1. MENÚ & POS -->
         <section id="vista-menu" class="vista-seccion active bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -265,7 +271,7 @@ $resultado_pedidos = $conexion->query("SELECT * FROM pedidos ORDER BY id DESC");
             </div>
         </section>
 
-        <!-- 2. COCINA (MONITOR INTERACTIVO CON CAMBIO DE ESTADO) -->
+        <!-- 2. COCINA -->
         <section id="vista-cocina" class="vista-seccion bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
             <h2 class="text-xl font-extrabold text-slate-900 mb-6">👨‍🍳 Monitor de Cocina (Control de Estados en Base de Datos)</h2>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -512,17 +518,6 @@ $resultado_pedidos = $conexion->query("SELECT * FROM pedidos ORDER BY id DESC");
 
     </main>
 
-    <!-- MASCOTA FLOTANTE EN LOS ESPACIOS LATERALES -->
-    <div class="mascota-flotante hidden xl:flex flex-col items-center" style="position: fixed; bottom: 65px; left: 24px; z-index: 50;">
-        <img src="mascota.png" alt="Mascota Sabor Ofertin" onerror="this.src='logo.png'" style="width: 110px; height: 110px; border-radius: 50%; object-fit: cover; border: 4px solid #991b1b; box-shadow: 0 8px 20px rgba(0,0,0,0.25); background: #fce7f3;">
-        <span style="font-size: 11px; font-weight: 800; background: #991b1b; color: white; padding: 3px 10px; border-radius: 9999px; margin-top: -10px; box-shadow: 0 2px 6px rgba(0,0,0,0.2);">¡Hola! 🐾</span>
-    </div>
-
-    <div class="mascota-flotante hidden xl:flex flex-col items-center" style="position: fixed; bottom: 65px; right: 24px; z-index: 50;">
-        <img src="mascota.png" alt="Mascota Sabor Ofertin" onerror="this.src='logo.png'" style="width: 110px; height: 110px; border-radius: 50%; object-fit: cover; border: 4px solid #991b1b; box-shadow: 0 8px 20px rgba(0,0,0,0.25); background: #fce7f3;">
-        <span style="font-size: 11px; font-weight: 800; background: #991b1b; color: white; padding: 3px 10px; border-radius: 9999px; margin-top: -10px; box-shadow: 0 2px 6px rgba(0,0,0,0.2);">¡Buen provecho! 🍽️</span>
-    </div>
-
     <!-- Pie de página -->
     <footer class="bg-wine text-white py-6 border-t-4 border-red-900 mt-auto text-center text-xs">
         <p>&copy; 2026 Sabor Ofertin. Conectado a MySQL en Clever Cloud.</p>
@@ -568,6 +563,16 @@ $resultado_pedidos = $conexion->query("SELECT * FROM pedidos ORDER BY id DESC");
             
             document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('bg-white', 'text-wine'));
             event.currentTarget.classList.add('bg-white', 'text-wine');
+
+            // Mostrar la mascota grande SOLAMENTE en la sección del menú
+            const mascota = document.getElementById('mascotaMenuUnica');
+            if (mascota) {
+                if (idVista === 'menu') {
+                    mascota.style.display = 'flex';
+                } else {
+                    mascota.style.display = 'none';
+                }
+            }
         }
 
         function mostrarSeccionSeleccionada(val) {
