@@ -191,20 +191,21 @@ $resultado_pedidos = $conexion->query("SELECT * FROM pedidos ORDER BY id DESC");
         <!-- 1. MENÚ & POS -->
         <section id="vista-menu" class="vista-seccion active bg-white rounded-2xl shadow-sm border border-slate-200 p-6 relative" style="overflow: visible !important;">
             
-            <!-- MASCOTA POSICIONADA EXACTAMENTE EN EL ÁREA QUE ENCERRASTE CON ROJO -->
-            <div class="hidden xl:block" style="position: absolute; bottom: -80px; right: 20px; z-index: 10; pointer-events: none;">
-                <img src="mascota.png" alt="Mascota Sabor Ofertin" onerror="this.src='logo.png'" style="width: 140px; height: auto; object-fit: contain; mix-blend-mode: multiply;">
+            <!-- MASCOTA EN EL ÁREA AMARILLA (SE MUEVE CON EL SCROLL) -->
+            <div class="hidden xl:block" style="position: absolute; bottom: 30px; right: -220px; z-index: 10; pointer-events: none;">
+                <img src="mascota.png" alt="Mascota Sabor Ofertin" onerror="this.src='logo.png'" style="width: 170px; height: auto; object-fit: contain; mix-blend-mode: multiply;">
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <div class="lg:col-span-2">
+                    <!-- CABECERA DEL CATÁLOGO CON EL MENÚ DESPLEGABLE -->
                     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-3">
                         <h2 class="text-xl font-extrabold text-slate-900">Catálogo de Platillos</h2>
                         <select id="filtroCategoria" onchange="filtrarPlatillos()" class="px-3 py-1.5 border rounded-xl text-xs font-bold bg-slate-50 text-slate-700 shadow-sm">
                             <option value="todos">📂 Todas las Categorías</option>
                             <option value="bebida">🥤 Bebidas</option>
-                            <option value="rapida">🍔 Comida Rápida</option>
-                            <option value="platillo">🍲 Platillos / Ensaladas</option>
+                            <option value="rapida">🍔 Comida Rápida (Alitas, Hamburguesas, etc.)</option>
+                            <option value="platillo">🍲 Platillos / Ensaladas / Sopas</option>
                             <option value="postre">🍰 Postres</option>
                         </select>
                     </div>
@@ -217,7 +218,7 @@ $resultado_pedidos = $conexion->query("SELECT * FROM pedidos ORDER BY id DESC");
                                     $cat_detectada = 'rapida';
                                 } elseif (strpos($nombre_platillo, 'agua') !== false || strpos($nombre_platillo, 'jugo') !== false || strpos($nombre_platillo, 'refresco') !== false || strpos($nombre_platillo, 'cafe') !== false) {
                                     $cat_detectada = 'bebida';
-                                } elseif (strpos($nombre_platillo, 'pastel') !== false || strpos($nombre_platillo, 'postre') !== false || strpos($nombre_platillo, 'hot cake') !== false) {
+                                } elseif (strpos($nombre_platillo, 'pastel') !== false || strpos($nombre_platillo, 'postre') !== false || strpos($nombre_platillo, 'hot cake') !== false || strpos($nombre_platillo, 'panqueque') !== false) {
                                     $cat_detectada = 'postre';
                                 } else {
                                     $cat_detectada = 'platillo';
@@ -672,7 +673,7 @@ $resultado_pedidos = $conexion->query("SELECT * FROM pedidos ORDER BY id DESC");
                 titulo.innerText = "🎯 Nuestra Misión Institucional";
                 texto.innerText = "En Sabor Ofertin, nuestra misión fundamental desde nuestra fundación en 1998 ha sido consolidarnos como un referente gastronómico de excelencia, ofreciendo a cada uno de nuestros comensales una experiencia culinaria excepcional que fusiona la más alta calidad, frescura y sabor tradicional con un servicio cálido y eficiente. Nos comprometemos rigurosamente a seleccionar ingredientes locales de óptima procedencia, apoyando de manera directa a los productores de la región y promoviendo prácticas sostenibles que minimicen nuestro impacto ambiental. Aspiramos a ser un espacio donde las familias, amigos y amantes de la buena comida puedan disfrutar de platillos elaborados con pasión, dedicación y estrictos estándares de higiene, garantizando siempre una relación calidad-precio justa que demuestre nuestro profundo agradecimiento a la comunidad que nos ha honrado con su preferencia a lo largo de más de dos décadas de trayectoria ininterrumpida.";
             } else if (val === 'vision') {
-                boxTexto.classList.0.remove('hidden');
+                boxTexto.classList.remove('hidden');
                 titulo.innerText = "🔭 Nuestra Visión Estratégica";
                 texto.innerText = "Nuestra visión para el futuro en Sabor Ofertin es expandir nuestro concepto culinario responsable e innovador a nuevos horizontes, posicionándonos firmemente como el restaurante líder indiscutible en la preferencia regional gracias a nuestra capacidad de adaptación, mejora continua y compromiso con la sustentabilidad ecológica. Proyectamos un crecimiento basado en la optimización de procesos mediante herramientas tecnológicas avanzadas —como nuestro sistema integral de gestión y POS digital—, manteniendo siempre el toque humano y artesanal que caracteriza a nuestros platillos estelares. Buscamos consolidar una red de alianzas sólidas con productores agroindustriales locales, fomentar el desarrollo profesional y humano de nuestro equipo de colaboradores, y establecernos como pioneros en la implementación de prácticas de economía circular, tales como el uso de empaques 100% compostables y la valorización de residuos orgánicos, garantizando así un legado de sabor, responsabilidad y bienestar para las futuras generaciones.";
             } else if (val === 'multimedia') {
