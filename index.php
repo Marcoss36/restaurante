@@ -147,6 +147,15 @@ $resultado_pedidos = $conexion->query("SELECT * FROM pedidos ORDER BY id DESC");
             padding: 10px 18px; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 0.9rem; white-space: nowrap; transition: all 0.2s ease;
         }
         .tab-btn.active, .tab-btn:hover { background-color: #ffffff; color: #991b1b; border-color: #ffffff; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); }
+        
+        /* Animación suave para la mascota */
+        @keyframes flotar {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-6px); }
+        }
+        .mascota-flotante {
+            animation: flotar 3s ease-in-out infinite;
+        }
     </style>
 </head>
 <body class="h-full flex flex-col text-slate-800 bg-slate-50">
@@ -275,7 +284,6 @@ $resultado_pedidos = $conexion->query("SELECT * FROM pedidos ORDER BY id DESC");
                             <span class="text-wine font-extrabold text-sm block mt-3">Total: $<?= number_format($row['total'], 2) ?></span>
                         </div>
                         
-                        <!-- Botones para cambiar estado directamente en la base de datos -->
                         <div class="mt-4 pt-3 border-t flex gap-2">
                             <?php if ($row['estado'] != 'Completado'): ?>
                                 <a href="index.php?cambiar_estado=Completado&id=<?= $row['id'] ?>" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white text-center py-1.5 rounded-lg text-[11px] font-bold transition">
@@ -503,6 +511,17 @@ $resultado_pedidos = $conexion->query("SELECT * FROM pedidos ORDER BY id DESC");
         </section>
 
     </main>
+
+    <!-- MASCOTA FLOTANTE EN LOS ESPACIOS LATERALES -->
+    <div class="mascota-flotante hidden xl:flex flex-col items-center" style="position: fixed; bottom: 65px; left: 24px; z-index: 50;">
+        <img src="mascota.png" alt="Mascota Sabor Ofertin" onerror="this.src='logo.png'" style="width: 110px; height: 110px; border-radius: 50%; object-fit: cover; border: 4px solid #991b1b; box-shadow: 0 8px 20px rgba(0,0,0,0.25); background: #fce7f3;">
+        <span style="font-size: 11px; font-weight: 800; background: #991b1b; color: white; padding: 3px 10px; border-radius: 9999px; margin-top: -10px; box-shadow: 0 2px 6px rgba(0,0,0,0.2);">¡Hola! 🐾</span>
+    </div>
+
+    <div class="mascota-flotante hidden xl:flex flex-col items-center" style="position: fixed; bottom: 65px; right: 24px; z-index: 50;">
+        <img src="mascota.png" alt="Mascota Sabor Ofertin" onerror="this.src='logo.png'" style="width: 110px; height: 110px; border-radius: 50%; object-fit: cover; border: 4px solid #991b1b; box-shadow: 0 8px 20px rgba(0,0,0,0.25); background: #fce7f3;">
+        <span style="font-size: 11px; font-weight: 800; background: #991b1b; color: white; padding: 3px 10px; border-radius: 9999px; margin-top: -10px; box-shadow: 0 2px 6px rgba(0,0,0,0.2);">¡Buen provecho! 🍽️</span>
+    </div>
 
     <!-- Pie de página -->
     <footer class="bg-wine text-white py-6 border-t-4 border-red-900 mt-auto text-center text-xs">
