@@ -188,12 +188,12 @@ $resultado_pedidos = $conexion->query("SELECT * FROM pedidos ORDER BY id DESC");
     <!-- CONTENIDO PRINCIPAL -->
     <main class="flex-grow max-w-7xl mx-auto px-4 py-8 w-full">
         
-        <!-- 1. MENÚ & POS (CONTENEDOR BLANCO CON POSICIÓN RELATIVA PARA ANCLAR LA MASCOTA ADENTRO) -->
-        <section id="vista-menu" class="vista-seccion active bg-white rounded-2xl shadow-sm border border-slate-200 p-6 relative overflow-hidden">
+        <!-- 1. MENÚ & POS -->
+        <section id="vista-menu" class="vista-seccion active bg-white rounded-2xl shadow-sm border border-slate-200 p-6 relative" style="overflow: visible !important;">
             
-            <!-- MASCOTA INTEGRADA EN EL FONDO BLANCO (SE MUEVE CON EL SCROLL Y NO TOCA LO ROJO) -->
-            <div style="position: absolute; bottom: 20px; right: 35px; z-index: 10; pointer-events: none;">
-                <img src="mascota.png" alt="Mascota Sabor Ofertin" onerror="this.src='logo.png'" style="width: 160px; height: auto; object-fit: contain; mix-blend-mode: multiply;">
+            <!-- MASCOTA COLOCADA EXACTAMENTE EN EL CÍRCULO AMARILLO (MARGEN DERECHO FUERA DE LA TARJETA BLANCA) -->
+            <div class="hidden xl:block" style="position: absolute; bottom: 30px; right: -160px; z-index: 10; pointer-events: none;">
+                <img src="mascota.png" alt="Mascota Sabor Ofertin" onerror="this.src='logo.png'" style="width: 170px; height: auto; object-fit: contain; mix-blend-mode: multiply;">
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -572,7 +572,7 @@ $resultado_pedidos = $conexion->query("SELECT * FROM pedidos ORDER BY id DESC");
             } else if (val === 'vision') {
                 boxTexto.classList.remove('hidden');
                 titulo.innerText = "🔭 Nuestra Visión Estratégica";
-                texto.innerText = "Nuestra visión para el futuro en Sabor Ofertin es expandir nuestro concepto culinario responsable e innovador a nuevos horizontes, posicionándonos firmemente como el restaurante líder indiscutible en la preferencia regional gracias a nuestra capacidad de adaptación, mejora continua y compromiso con la sustentabilidad ecológica. Proyectamos un crecimiento basado en la optimización de procesos mediante herramientas tecnológicas avanzadas —como nuestro sistema integral de gestión y POS digital—, manteniendo siempre el toque humano y artesanal que caracteriza a nuestros platillos estelares. Buscamos consolidar una red de alianzas sólidas con productores agroindustriales locales, fomentar el desarrollo profesional y humano de nuestro equipo de colaboradores, y establecernos como pioneros en la implementación de prácticas de economía circular, tales como el uso de empaques 100% compostables y la valorización de residuos orgánicos, garantizando así un legado de sabor, responsabilidad y bienestar para las futuras generaciones.";
+                texto.innerText = "Nuestra visión para el futuro en Sabor Ofertin es expandir nuestro concepto culinario responsable e innovador a nuevos horizontes, posicionándonos firmemente como el restaurante líder indiscutible en la preferencia regional gracias a nuestra capacidad de adaptación, mejora continua y compromiso con la sustentabilidad ecológica. Proyectamos un crecimiento basado en la optimización de procesos mediante herramientas tecnológicas avanzadas —como nuestro sistema integral de gestión y POS digital—, manteniendo siempre el toque humano y artesanal que characterizes a nuestros platillos estelares. Buscamos consolidar una red de alianzas sólidas con productores agroindustriales locales, fomentar el desarrollo profesional y humano de nuestro equipo de colaboradores, y establecernos como pioneros en la implementación de prácticas de economía circular, tales como el uso de empaques 100% compostables y la valorización de residuos orgánicos, garantizando así un legado de sabor, responsabilidad y bienestar para las futuras generaciones.";
             } else if (val === 'multimedia') {
                 boxMedia.classList.remove('hidden');
             }
