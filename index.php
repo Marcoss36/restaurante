@@ -191,21 +191,20 @@ $resultado_pedidos = $conexion->query("SELECT * FROM pedidos ORDER BY id DESC");
         <!-- 1. MENÚ & POS -->
         <section id="vista-menu" class="vista-seccion active bg-white rounded-2xl shadow-sm border border-slate-200 p-6 relative" style="overflow: visible !important;">
             
-            <!-- MASCOTA EN EL ÁREA AMARILLA (SE MUEVE CON EL SCROLL) -->
+            <!-- MASCOTA EN SU POSICIÓN ORIGINAL -->
             <div class="hidden xl:block" style="position: absolute; bottom: 30px; right: -220px; z-index: 10; pointer-events: none;">
                 <img src="mascota.png" alt="Mascota Sabor Ofertin" onerror="this.src='logo.png'" style="width: 170px; height: auto; object-fit: contain; mix-blend-mode: multiply;">
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <div class="lg:col-span-2">
-                    <!-- CABECERA DEL CATÁLOGO CON EL MENÚ DESPLEGABLE -->
                     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-3">
                         <h2 class="text-xl font-extrabold text-slate-900">Catálogo de Platillos</h2>
                         <select id="filtroCategoria" onchange="filtrarPlatillos()" class="px-3 py-1.5 border rounded-xl text-xs font-bold bg-slate-50 text-slate-700 shadow-sm">
                             <option value="todos">📂 Todas las Categorías</option>
                             <option value="bebida">🥤 Bebidas</option>
-                            <option value="rapida">🍔 Comida Rápida (Alitas, Hamburguesas, etc.)</option>
-                            <option value="platillo">🍲 Platillos / Ensaladas / Sopas</option>
+                            <option value="rapida">🍔 Comida Rápida</option>
+                            <option value="platillo">🍲 Platillos / Ensaladas</option>
                             <option value="postre">🍰 Postres</option>
                         </select>
                     </div>
@@ -218,7 +217,7 @@ $resultado_pedidos = $conexion->query("SELECT * FROM pedidos ORDER BY id DESC");
                                     $cat_detectada = 'rapida';
                                 } elseif (strpos($nombre_platillo, 'agua') !== false || strpos($nombre_platillo, 'jugo') !== false || strpos($nombre_platillo, 'refresco') !== false || strpos($nombre_platillo, 'cafe') !== false) {
                                     $cat_detectada = 'bebida';
-                                } elseif (strpos($nombre_platillo, 'pastel') !== false || strpos($nombre_platillo, 'postre') !== false || strpos($nombre_platillo, 'hot cake') !== false || strpos($nombre_platillo, 'panqueque') !== false) {
+                                } elseif (strpos($nombre_platillo, 'pastel') !== false || strpos($nombre_platillo, 'postre') !== false || strpos($nombre_platillo, 'hot cake') !== false) {
                                     $cat_detectada = 'postre';
                                 } else {
                                     $cat_detectada = 'platillo';
