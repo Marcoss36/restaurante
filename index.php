@@ -508,7 +508,7 @@ $resultado_pedidos = $conexion->query("SELECT * FROM pedidos ORDER BY id DESC");
                     <option value="">-- Selecciona una opción --</option>
                     <option value="mision">🎯 Nuestra Misión</option>
                     <option value="vision">🔭 Nuestra Visión</option>
-                    <option value="multimedia">🎬 Contenido Multimedia (Video y Audio)</option>
+                    <option value="multimedia">🎬 Contenido Multimedia (Video de YouTube y Audio)</option>
                 </select>
             </div>
 
@@ -519,8 +519,11 @@ $resultado_pedidos = $conexion->query("SELECT * FROM pedidos ORDER BY id DESC");
 
             <div id="resultadoMultimedia" class="hidden grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
                 <div class="border p-4 rounded-xl">
-                    <h3 class="font-bold text-sm mb-2">Video Institucional</h3>
-                    <video controls class="w-full rounded-lg"><source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4"></video>
+                    <h3 class="font-bold text-sm mb-2">Video Institucional (YouTube)</h3>
+                    <!-- Video actualizado de YouTube -->
+                    <div class="aspect-w-16 aspect-h-9">
+                        <iframe class="w-full h-64 rounded-lg" src="https://www.youtube.com/embed/6fhAchG-jcw" title="Video de Restaurantes" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                    </div>
                 </div>
                 <div class="border p-4 rounded-xl">
                     <h3 class="font-bold text-sm mb-2">Audio Ambiental</h3>
